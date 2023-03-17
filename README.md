@@ -19,7 +19,7 @@ simpler, but that's not ready today.
 
 # STEPS
 
-We are going to use ubuntu jammy on mainline on a panfrost mesa powered ARM64 system, because like Debian, they support multiarch, that means, having a 64 bit linux kernel (the OS core) and both 64 bit (ARM64/AARCH64) userspace libraries that are used by 64 bit programs like box64, and 32 bit (ARMHF) userspace libraries, used by ARMHF 32 bit software, like BOX86. So, a 64 bit core, and both 64 bit and 32 bit arm libraries. Windows used to do this not that far away in time to run x86 windows software. Programas doesn't run isolated, they use system (or third party) libraries to work, that's why we need them. Libraries make development and system complexity to be reduced. On windows libraries end on .dll and here on .so, so, shared objects. why shared? because they are or can be used by multiple software. 
+We are going to use ubuntu jammy on mainline on a panfrost mesa powered ARM64 system on this case since those are the systems I use. We are also going to use ubuntu because like Debian, they support multiarch, that means, having a 64 bit linux kernel (the OS core) and both 64 bit (ARM64/AARCH64) userspace libraries that are used by 64 bit programs like box64, and 32 bit (ARMHF) userspace libraries, used by ARMHF 32 bit software, like BOX86. So, a 64 bit core, and both 64 bit and 32 bit arm libraries. Windows used to do this not that far away in time to run x86 windows software. Programas doesn't run isolated, they use system (or third party) libraries to work, that's why we need them. Libraries make development and system complexity to be reduced. On windows libraries end on .dll and here on .so, so, shared objects. why shared? because they are or can be used by multiple software. 
 
 1. First, we need to install BOX86 and BOX64 and we are going to use Ryan Fortner REPOS at https://github.com/ryanfortner/box86-debs and https://github.com/ryanfortner/box64-debs
     
@@ -191,4 +191,18 @@ NOTE: nine and nine over panfrost it's on development, so, expect issues. You ca
     
     or you can just set `d3d8.dll` as native on winecfg but I think it's best the other way.
 
-on every ocassion, both dx9 or dx8 games with the wrapper, and if running from terminal, you will see gallium nine being used, if not, gallium nine isnt working for some reason and it's utilizing WINE3D
+on every ocassion, both dx9 or dx8 games with the wrapper, and if running from terminal, you will see gallium nine being used, if not, gallium nine isnt working for some reason and it's utilizing WINE3D.
+
+## STEAM WINDOWS GAMES  >>> check the linux section about Goldberg
+
+### LINUX GAMES
+
+For the linux games, it's super easy, remember that we need opengl 3.3 at least for most modern games, but some run just fine with 2.1 (and s3ct texture compression support), so that's why the env var we placed
+at /etc/environment (PAN_MESA_DEBUG=gl3), on RPI4 it should be the same to export these two variables: MESA_GL_VERSION_OVERRIDE=3.3 and MESA_GLSL_VERSION_OVERRIDE=330.
+
+first, if a game has a problem, launch it from terminal with BOX86_LOG=1 env var like "BOX86_LOG=1 box86 game.bin" then if it's a lib missing, it will say that a native library isn't available or that a library is missing. if it's a native one, just install it from the repo (remember to use :armhf if box86), if it's an x86 or x86_64 one, get it from the game folder and copy it to the binary executable OR set BOX64_LD_LIBRARY_PATH=/to_the_path_where_the_library_is. if the game folder doesnt has it, get it from debian repo browsing a bit..so, google "whatever.so debian", download it, place it on the executable folder.
+
+There is not much to say, for steam games, it's extremely recommended to use GOLDBERG steam emulator, since you dont need the steam client. grab your copy from steam for linux on any pc or use steamcmd from your pc or sbc... drop goldberg libs (if x86 linux game, x86 linux .so libs, if x86_64 game linux x86_64 .so steam libs...same for windows dlls) then it should just launch like any game...
+
+
+ Good luck and remember this is a WIP! all the glory to ptitseb and mesa developers!
