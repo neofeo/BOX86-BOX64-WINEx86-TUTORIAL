@@ -43,8 +43,10 @@ We are going to use ubuntu jammy on mainline on a panfrost mesa powered ARM64 sy
 2. since you are on Panfrost (RPI4 also has mesa drivers but this only applies to panfrost), we will need OpenGL 3.3 for many games, so we should force it:
 
     ```
-    sudo nano /etc/environment and on a blank line just type "PAN_MESA_DEBUG=gl3" without quotes, save and close
+    sudo nano /etc/environment and on a blank line just type "PAN_MESA_DEBUG=gl3" without quotes, save and close (it will need a reboot later on).
     ```
+    
+    on RPI4 it should be the same to export these two variables: MESA_GL_VERSION_OVERRIDE=3.3 and MESA_GLSL_VERSION_OVERRIDE=330 on two different lines.
     
 3. Reboot for now, not required. check that box64 and box86 launch from terminal after that.
 
@@ -78,7 +80,7 @@ Then, on a terminal we do..
 
 6. Ending wine setup..
 
-    Every linux app (if on purpose, AKA not portable), and wine is a linux app, can be accesed by terminal like box86 and box64. we have our wine binaries on our user `/home` folder, so we need to link that to `/usr/local/bin` in order to the system to recognize it and be able to execute it, while x86, BOX86 will pick it and emulate it automatically.
+    Every linux app (if not portable), and wine is a linux app, can be accesed by terminal like box86 and box64. we have our wine binaries on our user `/home` folder, so we need to link that to `/usr/local/bin` in order to the system to recognize it and be able to execute it, while x86, BOX86 will pick it and emulate it automatically.
 
       So we do the next thing from terminal to create those links:
     
@@ -160,9 +162,9 @@ Then, on a terminal we do..
     or just the mesa packages (dpkg will list the packages that are upgradable after  `sudo apt update`, it will warn you about new packages, so, not required to do full upgrade)
 
 
-10. with oibaf mesa drivers, we can test Gallium nine because it's enable by default. at point 8 I said we didnt have DirectX drivers, ding ding, I lied, we have "native" DX9 drivers and they are also possible to be used with wrappers on DX7 and DX8 games.
+10. With oibaf mesa drivers repo, we can test Gallium nine because it's enabled by default. at point 8 I said we didnt have DirectX drivers, ding ding, I lied, we have "native" DX9 drivers and they are also possible to be used with wrappers on DX7 and DX8 games.
 
-NOTE: nine and nine over panfrost it's on development, so, expect issues. You can make an apitrace (https://github.com/iXit/wine-nine-standalone/wiki/apitrace) and place a ticket at mesa.
+**Note:** nine and nine over panfrost it's on development, so, expect issues. You can make an apitrace (https://github.com/iXit/wine-nine-standalone/wiki/apitrace) and place a ticket at mesa.
 
     once we added oibaf, we install the gallium nine component on the driver with 
     
@@ -197,12 +199,15 @@ on every ocassion, both dx9 or dx8 games with the wrapper, and if running from t
 
 ### LINUX GAMES
 
-For the linux games, it's super easy, remember that we need opengl 3.3 at least for most modern games, but some run just fine with 2.1 (and s3ct texture compression support), so that's why the env var we placed
-at /etc/environment (PAN_MESA_DEBUG=gl3), on RPI4 it should be the same to export these two variables: MESA_GL_VERSION_OVERRIDE=3.3 and MESA_GLSL_VERSION_OVERRIDE=330.
+For the linux games, it's super easy, remember that we need opengl 3.3 at least for most modern games, but some run just fine with 2.1 (and s3ct texture compression support), so that's why the env var we placed at /etc/environment (PAN_MESA_DEBUG=gl3), on RPI4 it should be the same to export these two variables: MESA_GL_VERSION_OVERRIDE=3.3 and MESA_GLSL_VERSION_OVERRIDE=330.
 
-first, if a game has a problem, launch it from terminal with BOX86_LOG=1 env var like "BOX86_LOG=1 box86 game.bin" then if it's a lib missing, it will say that a native library isn't available or that a library is missing. if it's a native one, just install it from the repo (remember to use :armhf if box86), if it's an x86 or x86_64 one, get it from the game folder and copy it to the binary executable OR set BOX64_LD_LIBRARY_PATH=/to_the_path_where_the_library_is. if the game folder doesnt has it, get it from debian repo browsing a bit..so, google "whatever.so debian", download it, place it on the executable folder.
+Just execute the game binaries from terminal like ./game.bin , box86 or box64 will be automatically called.
 
-There is not much to say, for steam games, it's extremely recommended to use GOLDBERG steam emulator, since you dont need the steam client. grab your copy from steam for linux on any pc or use steamcmd from your pc or sbc... drop goldberg libs (if x86 linux game, x86 linux .so libs, if x86_64 game linux x86_64 .so steam libs...same for windows dlls) then it should just launch like any game...
+First, if a game has a problem, launch it from terminal with BOX86_LOG=1 env var like "BOX86_LOG=1 box86 game.bin" then if there is a lib missing, it will say that a "native library isn't available" or that a "library is missing". if it's a native one, just install it from the repo (remember to use :armhf if box86) and if it's an x86 or x86_64 one, get it from the game folder and copy it to the binary executable OR set BOX64_LD_LIBRARY_PATH=/to_the_path_where_the_library_is. if the game folder doesn't has it, get it from debian repo browsing a bit..so, google "whatever.so debian", download it, unpack the deb, place it on the executable folder.
+
+### GOLDBERG STEAM EMULATOR
+
+For STEAM games, it's extremely recommended to use GOLDBERG steam emulator (https://gitlab.com/Mr_Goldberg/goldberg_emulator), since you dont need the steam client. grab your copy from steam for linux on any pc or use steamcmd from your pc or sbc... get a goldberg release, unpack it, drop goldberg libs alongside you game or wherever are the steam libs on your game. If an x86 linux game, x86 linux .so libs are the ones you need, if an x86_64 game linux x86_64 .so steam libs...same for windows dlls) then it should just launch like any game without DRM...
 
 
  Good luck and remember this is a WIP! all the glory to ptitseb and mesa developers!
