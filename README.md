@@ -10,7 +10,7 @@ _Salvador Liébana (MicroLinux YT: https://www.youtube.com/channel/UCwFQAEj1lp3o
 - BOX86 is a linux x86 userspace emulator, it's ARMHF ONLY (ARM 32 bits); on ARM64 we need a multiarch system to run it. 
 - BOX64 is a linux x86_64 userspace emualtor, it's ARM64 ONLY (ARM 64 bits); we need a 64 bit arm system.
 - BOX32 is an on DEV linux x86 userspace emulator, it's ARM64 ONLY (ARM 64 bits) and targets legacy linux x86 apps without multiarch and handy on non multiarch supported distros like manjaro.
-- WINE x86 it's of course x86 (x86 32 bits) but you can install wine x64 (x86_64 64 bits) if you want, I don't found it usefull here.
+- WINE x86 it's of course x86 (x86 32 bits) but you can install wine x64 (x86_64 64 bits) if you want, I don't found it useful here (unless you have a proper AMD gpu).
 - BOX86/64 will wrapper system libs to make it easier to run x86/x86_64 sofware without having to store a full set of x86/x86_64 libs and to produce a better performance
 since those libs will not be emulated, just used the armhf/arm64 counterpart ones.
 
@@ -140,7 +140,7 @@ Then, on a terminal we do..
     you can list every possible instalable (unless it's 16 bit) software with winetricks with:
   
     ```
-    winetricks list-all"
+    winetricks list-all
     ```
     
 8. Now you can test some windows x86 software with:
