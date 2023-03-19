@@ -1,6 +1,8 @@
-# BOX86/BOX64/WINEX86 TUTORIAL for ARM64 LINUX SYSTEMS by SALVADOR LIÈBANA (MICROLINUX)
+# BOX86/BOX64/WINEX86 TUTORIAL for ARM64 LINUX SYSTEMS
 
-_Salvador Liébana_
+
+_Salvador Liébana (MicroLinux YT: https://www.youtube.com/channel/UCwFQAEj1lp3out4n7BeBatQ )_
+
 
 
 ## QUICK RECAP
@@ -13,7 +15,7 @@ _Salvador Liébana_
 since those libs will not be emulated, just used the armhf/arm64 counterpart ones.
 
 ### Latest wine development 
-it's developing a SySwow64 system to execute x86 apps on pure x86_64 platforms without multiarch (on linux x86_64 they still need multiarch to run x86 apps),
+WINEHQ team is developing a SySwow64 system to execute x86 apps on pure x86_64 platforms without multiarch (on linux x86_64 they still need multiarch to run x86 apps),
 Beucause of that, newer BOx64 developement will allow, alongside this wine development, to execute x86 windows apps without multiarch, neither box86, making the all thing a lot
 simpler, but that's not ready today.
 
@@ -166,27 +168,28 @@ Then, on a terminal we do..
 
 **Note:** nine and nine over panfrost it's on development, so, expect issues. You can make an apitrace (https://github.com/iXit/wine-nine-standalone/wiki/apitrace) and place a ticket at mesa.
 
-    once we added oibaf, we install the gallium nine component on the driver with 
+once we added oibaf, we install the gallium nine component on the driver with 
     
     ```
     sudo apt install libd3dadapter9-mesa:armhf
     ```
     
-    and with winetricks we install gallium nine into wine with
+and with winetricks we install gallium nine into wine with
     
     ```
     winetricks galliumnine
     ```
 
-    now let's test if it works, do
+now let's test if it works, do
     
     ```
     wine ninewinecfg
     ```
     
-    it should be working. then, every DX9 game should use Gallium nine instead of WINE3D.
+it should be working. then, every DX9 game should use Gallium nine instead of WINE3D.
 
-    to use it on DX8 games: we drag an x86 .dll copy of the dx8 to dx9 wrapper from here https://github.com/crosire/d3d8to9/releases, we place it on the game folder, probably overriting the original lib (you can jsut rename the original first)  and from terminal we execute the game with 
+To use NINE on DX8 games: we drag an x86 .dll copy of the dx8 to dx9 wrapper from here https://github.com/crosire/d3d8to9/releases, we place it on the game folder, probably overriting the original lib (you can jsut rename the original first) and from terminal we execute the game with:
+
     
     ```
     WINEDLLOVERRIDES=d3d8.dll=n wine thedx8game.exe```
@@ -195,19 +198,24 @@ Then, on a terminal we do..
 
 on every ocassion, both dx9 or dx8 games with the wrapper, and if running from terminal, you will see gallium nine being used, if not, gallium nine isnt working for some reason and it's utilizing WINE3D.
 
-## STEAM WINDOWS GAMES  >>> check the linux section about Goldberg
+**Note:** For STEAM WINDOWS GAMES I recommend the usage of Goldeberg emulator, and it works the same way as on linux games, you just need to use the goldberg windows x86 libs to replace the game
+folder steam libraries to emulate steam. This isn't illegal at all!
 
-### LINUX GAMES
+## LINUX GAMES
 
 For the linux games, it's super easy, remember that we need opengl 3.3 at least for most modern games, but some run just fine with 2.1 (and s3ct texture compression support), so that's why the env var we placed at /etc/environment (PAN_MESA_DEBUG=gl3), on RPI4 it should be the same to export these two variables: MESA_GL_VERSION_OVERRIDE=3.3 and MESA_GLSL_VERSION_OVERRIDE=330.
 
-Just execute the game binaries from terminal like ./game.bin , box86 or box64 will be automatically called.
+Just execute the game binaries from terminal like "./game.bin" , box86 or box64 will be automatically called.
 
-First, if a game has a problem, launch it from terminal with BOX86_LOG=1 env var like "BOX86_LOG=1 box86 game.bin" then if there is a lib missing, it will say that a "native library isn't available" or that a "library is missing". if it's a native one, just install it from the repo (remember to use :armhf if box86) and if it's an x86 or x86_64 one, get it from the game folder and copy it to the binary executable OR set BOX64_LD_LIBRARY_PATH=/to_the_path_where_the_library_is. if the game folder doesn't has it, get it from debian repo browsing a bit..so, google "whatever.so debian", download it, unpack the deb, place it on the executable folder.
+First, if a game has a problem, launch it from terminal with BOX86_LOG=1 env var like "BOX86_LOG=1 box86 game.bin" then if there is a lib missing, it will say that a "native library isn't available" or that a "library is missing (then it's a non native lib that isn't wrapped on box86 or box64, so an x86 or x86_64 lib is required to run the game). 
 
-### GOLDBERG STEAM EMULATOR
+If it's a native one, just install it from the repo (remember to use :armhf if box86) and if it's an x86 or x86_64 one, get it from the game folder and copy it to the binary executable OR set BOX64_LD_LIBRARY_PATH=/to_the_path_where_the_library_is. If the game folder doesn't has it, get it from debian repo browsing a bit..so, google "whatever.so debian", download it, unpack the deb, place the lib on the executable folder so box86/64 will pick it.
+
+
+## GOLDBERG STEAM EMULATOR
 
 For STEAM games, it's extremely recommended to use GOLDBERG steam emulator (https://gitlab.com/Mr_Goldberg/goldberg_emulator), since you dont need the steam client. grab your copy from steam for linux on any pc or use steamcmd from your pc or sbc... get a goldberg release, unpack it, drop goldberg libs alongside you game or wherever are the steam libs on your game. If an x86 linux game, x86 linux .so libs are the ones you need, if an x86_64 game linux x86_64 .so steam libs...same for windows dlls) then it should just launch like any game without DRM...
 
+example here: https://www.youtube.com/watch?v=K9ITyZgGD5E&t=21s
 
  Good luck and remember this is a WIP! all the glory to ptitseb and mesa developers!
