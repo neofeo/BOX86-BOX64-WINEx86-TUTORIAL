@@ -50,7 +50,7 @@ We are going to use ubuntu jammy on mainline on a panfrost mesa powered ARM64 sy
     
     on RPI4 it should be the same to export these two variables: MESA_GL_VERSION_OVERRIDE=3.3 and MESA_GLSL_VERSION_OVERRIDE=330 on two different lines.
     
-3. Reboot for now, not required. check that box64 and box86 launch from terminal after that.
+3. Reboot for now, not required but just to get the /etc/environment env vars working.
 
 4. **Note:** if you install wine (arm64 or armhf) and winetricks with apt, remove them, wine ARM will not be usefull for mostly anything here since they arent that much arm64 windows apps, not even legally accesible outside windows on ARM most probably.
 
@@ -125,7 +125,7 @@ Then, on a terminal we do..
       installing the essentials (I consider them like that) from terminal with:
     
     ```
-    W_OPT_UNATTENDED=1 winetricks mfc42 vcrun6 vcrun2003 xact d3drm d3dx9_43 d3dcompiler_43 \
+    W_OPT_UNATTENDED=1 winetricks mfc42 vcrun6 vb6run vcrun2003 xact d3drm d3dx9_43 d3dcompiler_43 \
       d3dx9 fontfix gdiplus dotnet20 msxml3 vcrun2005sp1 vcrun2008 fontsmooth=rgb
     ```
   
