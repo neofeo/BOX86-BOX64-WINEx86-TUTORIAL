@@ -111,13 +111,13 @@ So we do the next thing from terminal to create those links:
  sudo ln -s ~/wine/bin/wineserver  /usr/local/bin/
 ```
     
-    Only if you plan to use box64 and wine x86_64, then:
+Only if you plan to use box64 and wine x86_64, then:
     
 ```
  sudo ln -s ~/wine/bin/wine64 /usr/local/bin/
 ```
     
-    Now we can launch wine to create the fake `c:` drive and the first setup, so type on terminal `winecfg` and install mono if it pop ups, etc, set xp for compat reasons and if you want to use a virtual windows, also set that.
+Now we can launch wine to create the fake `c:` drive and the first setup, so type on terminal `winecfg` and install mono if it pop ups, etc, set xp for compat reasons and if you want to use a virtual windows, also set that.
 
 7. installing winetricks and essential libs:
 
@@ -164,9 +164,9 @@ So we do the next thing from terminal to create those links:
     
 8. Now you can test some windows x86 software with:
 
-    ```
-    wine explorer /desktop=1024x768 program.exe
-    ```
+```
+ wine explorer /desktop=1024x768 program.exe
+```
     
   To ensure that there is no display resolution problem. if your system doesnt have 1024x768 added on xrandr... it will crash even if it works. if you have the resolution added with xrandr and working.. you can skipt that advice and just "wine program.exe", the same if you already set a virtual desktip from winecfg.
 
@@ -174,11 +174,11 @@ So we do the next thing from terminal to create those links:
 
     GPU drivers upgrade: you can use oibaf launchpad repo, but latest mesa drivers may be problematic.
 
-    ```
-    sudo add-apt-repository ppa:oibaf/graphics-drivers
-    sudo apt update
-    sudo apt upgrade 
-    ```
+```
+  sudo add-apt-repository ppa:oibaf/graphics-drivers
+  sudo apt update
+  sudo apt upgrade 
+```
     
     or just the mesa packages (dpkg will list the packages that are upgradable after  `sudo apt update`, it will warn you about new packages, so, not required to do full upgrade)
 
@@ -189,29 +189,30 @@ So we do the next thing from terminal to create those links:
 
 once we added oibaf, we install the gallium nine component on the driver with 
     
-    ```
+```
     sudo apt install libd3dadapter9-mesa:armhf
-    ```
+```
     
 and with winetricks we install gallium nine into wine with
     
-    ```
+```
     winetricks galliumnine
-    ```
+```
 
 now let's test if it works, do
     
-    ```
-    wine ninewinecfg
-    ```
+```
+  wine ninewinecfg
+```
     
 it should be working. then, every DX9 game should use Gallium nine instead of WINE3D.
 
 To use NINE on DX8 games: we drag an x86 .dll copy of the dx8 to dx9 wrapper from here https://github.com/crosire/d3d8to9/releases, we place it on the game folder, probably overriting the original lib (you can jsut rename the original first) and from terminal we execute the game with:
 
     
-    ```
-    WINEDLLOVERRIDES=d3d8.dll=n wine thedx8game.exe```
+```
+  WINEDLLOVERRIDES=d3d8.dll=n wine thedx8game.exe
+```
     
     or you can just set `d3d8.dll` as native on winecfg but I think it's best the other way.
 
