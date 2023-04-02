@@ -97,7 +97,7 @@ Then, on a terminal we do..
  libudev1:armhf libgl1-mesa-dev:armhf libx11-dev:armhf libsdl2-image-2.0-0:armhf libsdl2-mixer-2.0-0:armhf
 ```
     
-    This will install a tonf of shit, check that doesnt remove anything please (that doesnt produce any conflict), if so, stop and remove whatever enter in conflict.
+This will install a tonf of shit, check that doesnt remove anything please (that doesnt produce any conflict), if so, stop and remove whatever enter in conflict.
 
 6. Ending wine setup..
 
