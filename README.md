@@ -28,8 +28,9 @@ We are going to use armbian ubuntu jammy on mainline on a panfrost mesa powered 
     Note that Ryan added specific platform target builds, but we are going to use the rpi4 binaries since the performance impact it's not that high, you can just use TAB after typing sudo apt install box86 to show all the variants or just apt search box86. The same applies to BOX64.
 
 
-```	
-NOTE ABOUT RK3588/RK3588S : Ryan seems that didnt add them has targets, and if you use ryan bianries on RK Linux, they will not work properly. you should compile them manually following
+	
+**RK3388 ONLY** 
+ABOUT RK3588/RK3588S : Ryan seems that didnt add them has targets, and if you use ryan binaries on RK Linux, they will not work properly. you should compile them manually following
 ptitseb instructions 
 	
 
@@ -38,34 +39,34 @@ cd box64
 mkdir build; cd build; cmake .. -DRK3588=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo
 make -j4
 sudo make install
-```
+
 If it's the first install, you also need:
-```
+
 sudo systemctl restart systemd-binfmt
-```
+
   
 	
 **BOX86**
     
-```
+
 sudo wget https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list
 wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg
 sudo apt update && sudo apt install box86 -y
-```
+
 
 **BOX64**
     
-```
+
 sudo wget https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list
 wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg 
 sudo apt update && sudo apt install box64 -y
-```
+
 
 2. since you are on a Panfrost (MESA FOSS GPU driver) powered SBC on mainline (RPI4 also has mesa drivers but this only applies to panfrost), we will need OpenGL 3.3 for many games, so we should force it:
 
-```
+
  sudo bash -c "echo 'PAN_MESA_DEBUG=gl3' >> /etc/environment"
-```
+
     
     on RPI4 it should be the same to export these two variables: MESA_GL_VERSION_OVERRIDE=3.3 and MESA_GLSL_VERSION_OVERRIDE=330 on two different lines.
     
@@ -84,18 +85,18 @@ sudo apt update && sudo apt install box64 -y
 
 - If you dont have armhf added by default like on armbian jammy, before installing the 32 bit armhf userspace libs you need to add armhf architecture first.
 
-```
+
  sudo dpkg --add-architecture armhf
  sudo apt update
-```
+
 Then, on a terminal we do..
 
-```
+
  sudo apt install cmake cabextract 7zip libncurses6:armhf libc6:armhf libx11-6:armhf libgdk-pixbuf2.0-0:armhf \
  libgtk2.0-0:armhf libstdc++6:armhf libsdl2-2.0-0:armhf mesa-va-drivers:armhf libsdl-mixer1.2:armhf \
  libpng16-16:armhf libsdl2-net-2.0-0:armhf libopenal1:armhf libsdl2-image-2.0-0:armhf libjpeg62:armhf \
  libudev1:armhf libgl1-mesa-dev:armhf libx11-dev:armhf libsdl2-image-2.0-0:armhf libsdl2-mixer-2.0-0:armhf
-```
+
     
 This will install a tonf of shit, check that doesnt remove anything please (that doesnt produce any conflict), if so, stop and remove whatever enter in conflict.
 
@@ -105,17 +106,17 @@ This will install a tonf of shit, check that doesnt remove anything please (that
 
 So we do the next thing from terminal to create those links:
     
-```
+
  sudo ln -s ~/wine/bin/wine        /usr/local/bin/
  sudo ln -s ~/wine/bin/winecfg     /usr/local/bin/
  sudo ln -s ~/wine/bin/wineserver  /usr/local/bin/
-```
+
     
 Only if you plan to use box64 and wine x86_64, then:
     
-```
+
  sudo ln -s ~/wine/bin/wine64 /usr/local/bin/
-```
+
     
 Now we can launch wine to create the fake `c:` drive and the first setup, so type on terminal `winecfg` and install mono if it pop ups, etc, set xp for compat reasons and if you want to use a virtual windows, also set that.
 
@@ -125,48 +126,48 @@ Now we can launch wine to create the fake `c:` drive and the first setup, so typ
 
       so, we get winetricks from terminal like this: 
     
-```
+
  wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
-```
+
 
     then we enable it as executable with:
     
-```
+
  sudo chmod +x winetricks
-```
+
     
     and then we move it to `/usr/local/bin` with
     
-```
+
  sudo mv winetricks /usr/local/bin
-```
+
 
       installing the essentials (I consider them like that) from terminal with:
     
-```
+
  W_OPT_UNATTENDED=1 winetricks mfc42 vcrun6 vb6run vcrun2003 xact d3drm d3dx9_43 d3dcompiler_43 \
  d3dx9 fontfix gdiplus dotnet20 msxml3 vcrun2005sp1 vcrun2008 fontsmooth=rgb
-```
+
   
       it will take some time...
 
       if you have a dxvk capable gpu, also install that one from winetricks.
   
-```
+
  winetricks dxvk
-```
+
   
     you can list every possible instalable (unless it's 16 bit) software with winetricks with:
   
-```
+
  winetricks list-all
-```
+
     
 8. Now you can test some windows x86 software with:
 
-```
+
  wine explorer /desktop=1024x768 program.exe
-```
+
     
   To ensure that there is no display resolution problem. if your system doesnt have 1024x768 added on xrandr... it will crash even if it works. if you have the resolution added with xrandr and working.. you can skipt that advice and just "wine program.exe", the same if you already set a virtual desktip from winecfg.
 
@@ -174,11 +175,11 @@ Now we can launch wine to create the fake `c:` drive and the first setup, so typ
 
     GPU drivers upgrade: you can use oibaf launchpad repo, but latest mesa drivers may be problematic.
 
-```
+
   sudo add-apt-repository ppa:oibaf/graphics-drivers
   sudo apt update
   sudo apt upgrade 
-```
+
     
     or just the mesa packages (dpkg will list the packages that are upgradable after  `sudo apt update`, it will warn you about new packages, so, not required to do full upgrade)
 
@@ -189,30 +190,30 @@ Now we can launch wine to create the fake `c:` drive and the first setup, so typ
 
 once we added oibaf, we install the gallium nine component on the driver with 
     
-```
+
     sudo apt install libd3dadapter9-mesa:armhf
-```
+
     
 and with winetricks we install gallium nine into wine with
     
-```
+
     winetricks galliumnine
-```
+
 
 now let's test if it works, do
     
-```
+
   wine ninewinecfg
-```
+
     
 it should be working. then, every DX9 game should use Gallium nine instead of WINE3D.
 
 To use NINE on DX8 games: we drag an x86 .dll copy of the dx8 to dx9 wrapper from here https://github.com/crosire/d3d8to9/releases, we place it on the game folder, probably overriting the original lib (you can jsut rename the original first) and from terminal we execute the game with:
 
     
-```
+
   WINEDLLOVERRIDES=d3d8.dll=n wine thedx8game.exe
-```
+
     
     or you can just set `d3d8.dll` as native on winecfg but I think it's best the other way.
 
