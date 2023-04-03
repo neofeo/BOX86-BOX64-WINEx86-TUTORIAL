@@ -16,7 +16,7 @@ since those libs will not be emulated, just used the armhf/arm64 counterpart one
 
 ### Latest wine development 
 WINEHQ team is developing a SySwow64 system to execute x86 apps on pure x86_64 platforms without multiarch (on linux x86_64 they still need multiarch to run x86 apps),
-Beucause of that, newer BOx64 developement will allow, alongside this wine development, to execute x86 windows apps without multiarch, neither box86, making the all thing a lot
+Beucause of that, newer BOX64 developement will allow, alongside this wine development, to execute x86 windows apps without multiarch, neither box86, making the all thing a lot
 simpler, but that's not ready today.
 
 # PROCEDURE FOR BOTH WINE/BOX64_BOX86
@@ -33,17 +33,17 @@ We are going to use armbian ubuntu jammy on mainline on a panfrost mesa powered 
 Ryan seems that didnt add them has targets, and if you use ryan binaries on RK Linux, they will not work properly. you should compile them manually following
 ptitseb instructions 
 	
-
+```
 git clone https://github.com/ptitSeb/box64
 cd box64
 mkdir build; cd build; cmake .. -DRK3588=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo
 make -j4
 sudo make install
-
+```
 If it's the first install, you also need:
-
+```
 sudo systemctl restart systemd-binfmt
-
+```
   
 	
 **BOX86**
