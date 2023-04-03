@@ -121,43 +121,42 @@ Only if you plan to use box64 and wine x86_64, then:
 Now we can launch wine to create the fake `c:` drive and the first setup, so type on terminal `winecfg` and install mono if it pop ups, etc, set xp for compat reasons and if you want to use a virtual windows, also set that.
 
 7. installing winetricks and essential libs:
+winetricks allow us to easily install some windows libraries that arent working perfectly on wine project reconstruction of those libraries, alonside other tricks.
 
-    winetricks allow us to easily install some windows libraries that arent working perfectly on wine project reconstruction of those libraries, alonside other tricks.
-
-      so, we get winetricks from terminal like this: 
+So, we get winetricks from terminal like this: 
     
 ```
  wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
 ```
 
-    then we enable it as executable with:
+then we enable it as executable with:
     
 ```
  sudo chmod +x winetricks
 ```
     
-    and then we move it to `/usr/local/bin` with
+and then we move it to `/usr/local/bin` with
     
 ```
  sudo mv winetricks /usr/local/bin
 ```
 
-      installing the essentials (I consider them like that) from terminal with:
+Installing the essentials (I consider them like that) from terminal with:
     
 ```
  W_OPT_UNATTENDED=1 winetricks mfc42 vcrun6 vb6run vcrun2003 xact d3drm d3dx9_43 d3dcompiler_43 \
  d3dx9 fontfix gdiplus dotnet20 msxml3 vcrun2005sp1 vcrun2008 fontsmooth=rgb
 ```
   
-      it will take some time...specially from sd systems
+It will take some time...specially from sd systems
 
-      if you have a dxvk capable gpu, also install that one from winetricks.
+If you have a dxvk capable gpu, also install that one from winetricks.
   
 ```
  winetricks dxvk
 ```
   
-    you can list every possible instalable (unless it's 16 bit) software with winetricks with:
+You can list every possible instalable (unless it's 16 bit) software with winetricks with:
   
 ```
  winetricks list-all
@@ -169,11 +168,11 @@ Now we can launch wine to create the fake `c:` drive and the first setup, so typ
  wine explorer /desktop=1024x768 program.exe
 ```
     
-  To ensure that there is no display resolution problem. if your system doesnt have 1024x768 added on xrandr... it will crash even if it works. if you have the resolution added with xrandr and working.. you can skipt that advice and just "wine program.exe", the same if you already set a virtual desktip from winecfg.
+To ensure that there is no display resolution problem. if your system doesnt have 1024x768 added on xrandr... it will crash even if it works. if you have the resolution added with xrandr and working.. you can skipt that advice and just "wine program.exe", the same if you already set a virtual desktip from winecfg.
 
 9. performance: by default wine use on our gpus WINE3D wrappers that translate DirectX calls to OpenGL (remember that we dont have DirectX drivers, just OPENGL and VULKAN is used on Linux), its not fast and very cpu intensive! but it's what we have, opengl games should run considerably faster and use less CPU.
 
-    GPU drivers upgrade: you can use oibaf launchpad repo, but latest mesa drivers may be problematic.
+GPU drivers upgrade: you can use oibaf launchpad repo, but latest mesa drivers may be problematic.
 
 ```
   sudo add-apt-repository ppa:oibaf/graphics-drivers
@@ -181,7 +180,7 @@ Now we can launch wine to create the fake `c:` drive and the first setup, so typ
   sudo apt upgrade 
 ```
     
-  or just the mesa packages (dpkg will list the packages that are upgradable after  `sudo apt update`, it will warn you about new packages, so, not required to do full upgrade)
+or just the mesa packages (dpkg will list the packages that are upgradable after `sudo apt update`, it will warn you about new packages, so, not required to do full upgrade)
 
 
 10. With oibaf mesa drivers repo, we can test Gallium nine because it's enabled by default. at point 8 I said we didnt have DirectX drivers, ding ding, I lied, we have "native" DX9 drivers and they are also possible to be used with wrappers on DX7 and DX8 games.
