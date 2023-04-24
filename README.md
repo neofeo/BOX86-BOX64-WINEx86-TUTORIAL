@@ -29,10 +29,12 @@ We are going to use armbian ubuntu jammy on mainline on a panfrost mesa powered 
 
 
 	
-**RK3388 ONLY** 
-Ryan seems that didnt add them has targets, and if you use ryan binaries on RK Linux, they will not work properly. you should compile them manually following
+**RK3588 ONLY** 
+Ryan seems that didnt add them has targets, and if you use ryan binaries on RK Linux RK3588/RK3588S, they will not work properly. you should compile them manually following
 ptitseb instructions 
-	
+
+compiling BOX64	
+
 ```
 git clone https://github.com/ptitSeb/box64
 cd box64
@@ -44,7 +46,23 @@ If it's the first install, you also need:
 ```
 sudo systemctl restart systemd-binfmt
 ```
-  
+then BOX86
+
+```
+git clone https://github.com/ptitSeb/box86.git
+cd box86
+mkdir build; cd build; cmake .. -DRK3588=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo; make -j4
+sudo make install
+
+As most RK3588 devices run an AARCH64 OS, you'll need an armhf multiarch environment, and an armhf gcc: On debian, install it with sudo apt install gcc-arm-linux-gnueabihf.
+Also, on armbian, you may need to install libc6-dev-armhf-cross or you may have an issue with crt1.o and a few other files not included with box86.
+```
+If it's the first install, you also need:
+```
+sudo systemctl restart systemd-binfmt
+```
+
+
 	
 **BOX86**
     
