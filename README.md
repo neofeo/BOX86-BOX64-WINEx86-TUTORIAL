@@ -255,6 +255,7 @@ If it's a native one, just install it from the repo (remember to use :armhf if b
 For STEAM games, it's extremely recommended to use GOLDBERG steam emulator (https://gitlab.com/Mr_Goldberg/goldberg_emulator), since you dont need the steam client. grab your copy from steam for linux on any pc or use steamCMD from your pc or sbc... get a goldberg release, unpack it, drop goldberg libs alongside you game or wherever are the steam libs on your game. If an x86 linux game, x86 linux .so libs are the ones you need, if an x86_64 game linux x86_64 .so steam libs...same for windows dlls) then it should just launch like any game without DRM...
 
 example with SteamCMD: https://www.youtube.com/watch?v=KFgPwZ19eGQ
-example here: https://www.youtube.com/watch?v=K9ITyZgGD5E&t=21s
+
+another example: https://www.youtube.com/watch?v=K9ITyZgGD5E&t=21s
 
  Good luck and remember this is a WIP! all the glory to ptitseb and mesa developers!
