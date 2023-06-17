@@ -20,16 +20,39 @@ WINEHQ team is developing a SySwow64 system to execute x86 apps on pure x86_64 p
 Beucause of that, newer BOX64 developement will allow, alongside this wine development, to execute x86 windows apps without multiarch, neither box86, making the all thing a lot
 simpler, but that's not ready today.
 
-# PROCEDURE FOR BOTH WINE/BOX64_BOX86
+# PROCEDURE FOR WINE/BOX64/BOX86
 
 We are going to use armbian ubuntu jammy on mainline on a panfrost mesa powered ARM64 system on this case since those are the systems I use. We are also going to use ubuntu because like Debian, they support multiarch, that means, having a 64 bit linux kernel (the OS core) and both 64 bit (ARM64/AARCH64) userspace libraries that are used by 64 bit programs like box64, and 32 bit (ARMHF) userspace libraries, used by ARMHF 32 bit software, like BOX86. So, a 64 bit core, and both 64 bit and 32 bit arm libraries. Windows used to do this not that far away in time to run x86 windows software. Programas doesn't run isolated, they use system (or third party) libraries to work, that's why we need them. Libraries make development and system complexity to be reduced. On windows libraries end on .dll and here on .so, so, shared objects. why shared? because they are or can be used by multiple software. 
 
-1. First, we need to install BOX86 and BOX64 and we are going to use Ryan Fortner REPOS at https://github.com/ryanfortner/box86-debs and https://github.com/ryanfortner/box64-debs
+1. We are going to setup a multiarch system adding armhf (AKA ARM 32 bits) before installing BOX86 (an armhf software only). This is not a complete list for the linux x86 stuff, it's
+ just a bunch of packages that depends on another bunch of system libs that ultimately will do what we want, a full 32 bit arm userspace set of libraries sop we can run box86.
+
+- If you dont have armhf added by default like on armbian/your linux distro, before installing the 32 bit armhf userspace libs you need to add armhf architecture first.
+
+```
+ sudo dpkg --add-architecture armhf
+ sudo apt update
+```
+Then, on a terminal we do..
+
+```
+ sudo apt install cmake cabextract 7zip libncurses6:armhf libc6:armhf libx11-6:armhf libgdk-pixbuf2.0-0:armhf \
+ libgtk2.0-0:armhf libstdc++6:armhf libsdl2-2.0-0:armhf mesa-va-drivers:armhf libsdl-mixer1.2:armhf \
+ libpng16-16:armhf libsdl2-net-2.0-0:armhf libopenal1:armhf libsdl2-image-2.0-0:armhf libjpeg62:armhf \
+ libudev1:armhf libgl1-mesa-dev:armhf libx11-dev:armhf libsdl2-image-2.0-0:armhf libsdl2-mixer-2.0-0:armhf
+```
+    
+This will install a tonf of shit, check that doesnt remove anything please (that doesnt produce any conflict), if so, stop and remove whatever enter in conflict.
+
+
+2. Now we can install BOX86/BOX64. You can compile it (recommended on RK3588 with RK Linux) or just use the Ryan Fortner Repos.
+
+
+First, we need to install BOX86 and BOX64 and we are going to use Ryan Fortner REPOS at https://github.com/ryanfortner/box86-debs and https://github.com/ryanfortner/box64-debs
     
     Note that Ryan added specific platform target builds, but we are going to use the rpi4 binaries since the performance impact it's not that high, you can just use TAB after typing sudo apt install box86 to show all the variants or just apt search box86. The same applies to BOX64.
 
 
-	
 **RK3588 ONLY** 
 Ryan seems that didnt add them has targets, and if you use ryan binaries on RK Linux RK3588/RK3588S, they will not work properly. you should compile them manually following
 ptitseb instructions 
@@ -64,60 +87,45 @@ sudo systemctl restart systemd-binfmt
 ```
 
 
-	
-**BOX86**
-    
+
+**ANY OTHER ARM64 MAINLINE PLATFORM** 
+
+
+**BOX86 with Ryan repos**
+
+
 ```
 sudo wget https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list
 wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg
-sudo apt update && sudo apt install box86 -y
+sudo apt update && sudo apt install box86-generic-arm -y
 ```
 
-**BOX64**
-    
+**BOX64 with Ryan repos**
+
+
 ```
 sudo wget https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list
 wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg 
-sudo apt update && sudo apt install box64 -y
+sudo apt update && sudo apt install box64-generic-arm -y
 ```
 
-2. since you are on a Panfrost (MESA FOSS GPU driver) powered SBC on mainline (RPI4 also has mesa drivers but this only applies to panfrost), we will need OpenGL 3.3 for many games, so we should force it:
+3. since you are on a Panfrost (MESA FOSS GPU driver) powered SBC on mainline (RPI4 also has mesa drivers but this only applies to panfrost), we will need OpenGL 3.3 for many games, so we should force it:
 
 ```
  sudo bash -c "echo 'PAN_MESA_DEBUG=gl3' >> /etc/environment"
 ```
-    
- on RPI4 it should be the same to export these two variables: MESA_GL_VERSION_OVERRIDE=3.3 and MESA_GLSL_VERSION_OVERRIDE=330 on two different lines.
-    
-3. Reboot for now, not required but just to get the /etc/environment env vars working.
 
-4. **Note:** if you installed wine (arm64 or armhf) or winetricks with apt, remove them, wine ARM will not be usefull for mostly anything here since they arent that much arm64 windows apps, not even legally accesible outside windows on ARM most probably.
+   
+ on RPI4 it should be the same to export these two variables: MESA_GL_VERSION_OVERRIDE=3.3 and MESA_GLSL_VERSION_OVERRIDE=330 on two different lines.
+
+
+4. Reboot for now, not required but just to get the /etc/environment env vars working.
+
+5. **Note:** if you installed wine (arm64 or armhf) or winetricks with apt, remove them, wine ARM will not be usefull for mostly anything here since they arent that much arm64 windows apps, not even legally accesible outside windows on ARM most probably.
 
     - installing WINE x86. okay, download a copy from https://github.com/Kron4ek/Wine-Builds/releases , would recommend x86 stagging or stable.
     - uncompress it, rename the folder "wine" and place it at your `/home/your_user/` directory.
 
-5. 
-
-
- Until we finish with wine, we are going to setup a basic 32 bit ARMHF userspace to run both linux x86 and wine x86 stuff with box86, this is not complete for the linux x86 stuff, it's
- just a bunch of packages that depends on another bunch of system libs that ultimately will do what we want, a full 32 bit arm userspace set of libraries.
-
-- If you dont have armhf added by default like on armbian jammy, before installing the 32 bit armhf userspace libs you need to add armhf architecture first.
-
-```
- sudo dpkg --add-architecture armhf
- sudo apt update
-```
-Then, on a terminal we do..
-
-```
- sudo apt install cmake cabextract 7zip libncurses6:armhf libc6:armhf libx11-6:armhf libgdk-pixbuf2.0-0:armhf \
- libgtk2.0-0:armhf libstdc++6:armhf libsdl2-2.0-0:armhf mesa-va-drivers:armhf libsdl-mixer1.2:armhf \
- libpng16-16:armhf libsdl2-net-2.0-0:armhf libopenal1:armhf libsdl2-image-2.0-0:armhf libjpeg62:armhf \
- libudev1:armhf libgl1-mesa-dev:armhf libx11-dev:armhf libsdl2-image-2.0-0:armhf libsdl2-mixer-2.0-0:armhf
-```
-    
-This will install a tonf of shit, check that doesnt remove anything please (that doesnt produce any conflict), if so, stop and remove whatever enter in conflict.
 
 6. Ending wine setup..
 
