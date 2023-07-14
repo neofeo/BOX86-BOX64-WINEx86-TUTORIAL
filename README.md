@@ -169,7 +169,9 @@ and then we move it to `/usr/local/bin` with
 ```
 
 NOTE: This winetricks thingy takes an hour to complete, you can just try to use proton wine that comes with some stuff already preinstalled
-*Installing the essentials (I consider them like that) from terminal with:
+and then skipt this libraries instalation.
+
+Installing the essentials (I consider them like that) from terminal with:
     
 ```
  W_OPT_UNATTENDED=1 winetricks mfc42 vcrun6 vb6run vcrun2003 xact d3drm d3dx9_43 d3dcompiler_43 \
