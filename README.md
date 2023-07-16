@@ -45,71 +45,36 @@ Then, on a terminal we do..
 This will install a tonf of shit, check that doesnt remove anything please (that doesnt produce any conflict), if so, stop and remove whatever enter in conflict.
 
 
-2. Now we can install BOX86/BOX64. You can compile it (recommended on RK3588 with RK Linux) or just use the Ryan Fortner Repos.
+2. Now we can install BOX86/BOX64. For RK3588/S you need to use the special target for it, the generic will not gonna cut it.
 
 
-First, we need to install BOX86 and BOX64 and we are going to use Ryan Fortner REPOS at https://github.com/ryanfortner/box86-debs and https://github.com/ryanfortner/box64-debs
+So, we need to install BOX86 and BOX64 and we are going to use Ryan Fortner REPOS at https://github.com/ryanfortner/box86-debs and https://github.com/ryanfortner/box64-debs
     
-    Note that Ryan added specific platform target builds, but we are going to use the rpi4 binaries since the performance impact it's not that high, you can just use TAB after typing sudo apt install box86 to show all the variants or just apt search box86. The same applies to BOX64.
+    Note that Ryan added specific platform target builds, but we are going to use the generic binaries since the performance impact it's not that high (if any), you can just use TAB after typing sudo apt install box86 to show all the variants or just apt search box86. The same applies to BOX64.
 
 
 **RK3588 ONLY** 
-Ryan seems that didnt add them has targets, and if you use ryan binaries on RK Linux RK3588/RK3588S, they will not work properly. you should compile them manually following
-ptitseb instructions 
-
-compiling BOX64	
-
-```
-git clone https://github.com/ptitSeb/box64
-cd box64
-mkdir build; cd build; cmake .. -DRK3588=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo
-make -j4
-sudo make install
-```
-If it's the first install, you also need:
-```
-sudo systemctl restart systemd-binfmt
-```
-then BOX86
-
-```
-git clone https://github.com/ptitSeb/box86.git
-cd box86
-mkdir build; cd build; cmake .. -DRK3588=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo; make -j4
-sudo make install
-
-As most RK3588 devices run an AARCH64 OS, you'll need an armhf multiarch environment, and an armhf gcc: On debian, install it with sudo apt install gcc-arm-linux-gnueabihf.
-Also, on armbian, you may need to install libc6-dev-armhf-cross or you may have an issue with crt1.o and a few other files not included with box86.
-```
-If it's the first install, you also need:
-```
-sudo systemctl restart systemd-binfmt
-```
-
-
-
-**ANY OTHER ARM64 MAINLINE PLATFORM** 
-
-
-**BOX86 with Ryan repos**
-
 
 ```
 sudo wget https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list
-wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg
-sudo apt update && sudo apt install box86-generic-arm -y
-```
-
-**BOX64 with Ryan repos**
-
-
-```
 sudo wget https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list
+wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg
 wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg 
-sudo apt update && sudo apt install box64-generic-arm -y
+sudo apt update && sudo apt install box86-rk3588 box64-rk3588 -y
 ```
 
-3. since you are on a Panfrost (MESA FOSS GPU driver) powered SBC on mainline (RPI4 also has mesa drivers but this only applies to panfrost), we will need OpenGL 3.3 for many games, so we should force it:
+
+**ANY OTHER ARM64 MAINLINE LINUX PLATFORM** 
+
+```
+sudo wget https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list
+sudo wget https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list
+wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg
+wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg 
+sudo apt update && sudo apt install box86-generic-arm box64-generic-arm -y
+```
+
+3. Since you are on a Panfrost (MESA FOSS GPU driver) powered SBC on mainline (RPI4 also has mesa drivers but this only applies to panfrost), we will need OpenGL 3.3 for many games, so we should force it:
 
 ```
  sudo bash -c "echo 'PAN_MESA_DEBUG=gl3' >> /etc/environment"
@@ -123,13 +88,13 @@ sudo apt update && sudo apt install box64-generic-arm -y
 
 5. **Note:** if you installed wine (arm64 or armhf) or winetricks with apt, remove them, wine ARM will not be usefull for mostly anything here since they arent that much arm64 windows apps, not even legally accesible outside windows on ARM most probably.
 
-    - installing WINE x86. okay, download a copy from https://github.com/Kron4ek/Wine-Builds/releases , would recommend x86 stagging or stable.
+    - installing WINE x86. okay, download a copy from https://github.com/Kron4ek/Wine-Builds/releases , would recommend x86 stagging or stable, you can also get the proton variant from there.
     - uncompress it, rename the folder "wine" and place it at your `/home/your_user/` directory.
 
 
 6. Ending wine setup..
 
-    Every linux app (if not portable), and wine is a linux app, can be accesed by terminal like box86 and box64. we have our wine binaries on our user `/home` folder, so we need to link that to `/usr/local/bin` in order to the system to recognize it and be able to execute it, while x86, BOX86 will pick it and emulate it automatically.
+    Every linux app (if not portable), and wine is a linux app, can be accesed by terminal like box86 and box64. We have our wine binaries on our user `/home` folder, so we need to link that to `/usr/local/bin` in order to the system to recognize it and be able to execute it, while x86 Wine, BOX86 will pick it and emulate it automatically thanks to the binfmt trick.
 
 So we do the next thing from terminal to create those links:
     
@@ -169,7 +134,7 @@ and then we move it to `/usr/local/bin` with
 ```
 
 NOTE: This winetricks thingy takes an hour to complete, you can just try to use proton wine that comes with some stuff already preinstalled
-and then skipt this libraries instalation.
+and then skipt this libraries instalation process.
 
 Installing the essentials (I consider them like that) from terminal with:
     
@@ -262,9 +227,11 @@ First, if a game has a problem, launch it from terminal with BOX86_LOG=1 env var
 If it's a native one, just install it from the repo (remember to use :armhf if box86) and if it's an x86 or x86_64 one, get it from the game folder and copy it to the binary executable OR set BOX64_LD_LIBRARY_PATH=/to_the_path_where_the_library_is. If the game folder doesn't has it, get it from debian repo browsing a bit..so, google "whatever.so debian", download it, unpack the deb, place the lib on the executable folder so box86/64 will pick it.
 
 
-## GOLDBERG STEAM EMULATOR
+## GOLDBERG STEAM EMULATOR or REAL LINUX STEAM x86 CLIENT
 
 For STEAM games, it's extremely recommended to use GOLDBERG steam emulator (https://gitlab.com/Mr_Goldberg/goldberg_emulator), since you dont need the steam client. grab your copy from steam for linux on any pc or use steamCMD from your pc or sbc... get a goldberg release, unpack it, drop goldberg libs alongside you game or wherever are the steam libs on your game. If an x86 linux game, x86 linux .so libs are the ones you need, if an x86_64 game linux x86_64 .so steam libs...same for windows dlls) then it should just launch like any game without DRM...
+
+On the other hand, you can install the real steam client with an .sh provided by ptitiseb on from the repo of box86, clone the repo and execute it or just drag that sh from the github site itself and execute it. I will make a video on that later, but, the client uses more than 2 gigs of ram doing nothing, so, not a good idea.
 
 example with SteamCMD: https://www.youtube.com/watch?v=KFgPwZ19eGQ
 
