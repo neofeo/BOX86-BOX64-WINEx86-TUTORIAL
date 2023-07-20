@@ -168,6 +168,8 @@ To ensure that there is no display resolution problem. if your system doesnt hav
 
 9. performance: by default wine use on our gpus WINE3D wrappers that translate DirectX calls to OpenGL (remember that we dont have DirectX drivers, just OPENGL and VULKAN is used on Linux), its not fast and very cpu intensive! but it's what we have, opengl games should run considerably faster and use less CPU.
 
+**Note:** RK3588 on RK Linux uses Panfork, a hacky mesa driver developed by Icecream95, DO NOT ATTEMPT TO USE OIBAF OR UPGRADE MESA ON RK3588 ON RK LINUX WITH PANFORK
+
 GPU drivers upgrade: you can use oibaf launchpad repo, but latest mesa drivers may be problematic.
 
 ```
