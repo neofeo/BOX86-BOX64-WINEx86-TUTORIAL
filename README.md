@@ -51,6 +51,7 @@ This will install a tonf of shit, check that doesnt remove anything please (that
 So, we need to install BOX86 and BOX64 and we are going to use Ryan Fortner REPOS at https://github.com/ryanfortner/box86-debs and https://github.com/ryanfortner/box64-debs
 Note that Ryan added specific platform target builds, but we are going to use the generic binaries since the performance impact it's not that high (if any), you can just use TAB after typing sudo apt install box86 to show all the variants or just apt search box86. The same applies to BOX64.
 
+**IF YOU USE MODERN ARMBIAN, BOX86/BOX64 PACKAGES ARE AVAILABLE FROM ARMBIAN, YOU DON'T NEED RYAN REPOS THEN. AFTER AN UPDATE, DO "APT INSTALL BOX86 OR BOX64" AND PRESS TAB TO SEE THEM** 
 
 **RK3588 ONLY** 
 
