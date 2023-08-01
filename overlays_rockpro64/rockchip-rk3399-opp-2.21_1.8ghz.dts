@@ -1,0 +1,39 @@
+/dts-v1/;
+
+/ {
+	compatible = "rockchip,rk3399";
+
+	fragment@0 {
+		target-path = "/opp-table-0";
+
+		__overlay__ {
+
+			opp06 {
+				opp-hz = <0x00 0x5a1f4a00>;
+				opp-microvolt = <0x118c30 0x118c30 0x124f80>;
+			};
+
+			opp07 {
+				opp-hz = <0x00 0x6b49d200>;
+				opp-microvolt = <0x124f80 0x124f80 0x13d620>;
+			};
+		};
+	};
+
+	fragment@1 {
+		target-path = "/opp-table-1";
+
+		__overlay__ {
+
+			opp08 {
+				opp-hz = <0x00 0x7829b800>;
+				opp-microvolt = <0x138800 0x138800 0x13d620>;
+			};
+
+			opp09 {
+				opp-hz = <0x00 0x839b6800>;
+				opp-microvolt = <0x138800 0x138800 0x13d620>;
+			};
+		};
+	};
+};

@@ -1,0 +1,14 @@
+/dts-v1/;
+
+/ {
+	compatible = "rockchip,rk3399";
+
+	fragment@0 {
+		target-path = "/pwm-fan";
+
+		__overlay__ {
+		
+			cooling-levels = <0x00 0x50 0x50 0x50 0x50>;
+		};
+	};
+};
