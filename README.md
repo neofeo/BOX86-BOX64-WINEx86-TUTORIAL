@@ -36,10 +36,10 @@ We are going to use armbian ubuntu jammy on mainline on a panfrost mesa powered 
 Then, on a terminal we do..
 
 ```
- sudo apt install cmake cabextract 7zip libncurses6:armhf libc6:armhf libx11-6:armhf libgdk-pixbuf2.0-0:armhf \
+ sudo apt install cmake cabextract p7zip-full libncurses6:armhf libc6:armhf libx11-6:armhf libgdk-pixbuf2.0-0:armhf \
  libgtk2.0-0:armhf libstdc++6:armhf libsdl2-2.0-0:armhf mesa-va-drivers:armhf libsdl-mixer1.2:armhf \
  libpng16-16:armhf libsdl2-net-2.0-0:armhf libopenal1:armhf libsdl2-image-2.0-0:armhf libjpeg62:armhf \
- libudev1:armhf libgl1-mesa-dev:armhf libx11-dev:armhf libsdl2-image-2.0-0:armhf libsdl2-mixer-2.0-0:armhf
+ libudev1:armhf libgl1-mesa-dev:armhf libx11-dev:armhf libsdl2-image-2.0-0:armhf libsdl2-mixer-2.0-0:armhf libvulkan1:armhf
 ```    
 
 This will install a tonf of shit, check that doesnt remove anything please (that doesnt produce any conflict), if so, stop and remove whatever enter in conflict.
@@ -142,7 +142,7 @@ Installing the essentials (I consider them like that) from terminal with:
 
 ```
  W_OPT_UNATTENDED=1 winetricks mfc42 vcrun6 vb6run vcrun2003 xact d3drm d3dx9_43 d3dcompiler_43 \
- d3dx9 fontfix gdiplus dotnet20 msxml3 vcrun2005sp1 vcrun2008 fontsmooth=rgb
+ d3dx9 fontfix dotnet20 msxml3 vcrun2005sp1 vcrun2008 fontsmooth=rgb
 ```
   
 It will take some time...specially from sd systems, I would just try proton wine first and do not attempt this setup.
