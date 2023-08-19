@@ -18,7 +18,7 @@ since those libs will not be emulated, just used the armhf/arm64 counterpart one
 ### Latest wine development 
 WINEHQ team is developing a SySwow64 system to execute x86 apps on pure x86_64 platforms without multiarch (on linux x86_64 they still need multiarch to run x86 apps),
 Beucause of that, newer BOX64 developement will allow, alongside this wine development, to execute x86 windows apps without multiarch, neither box86, making the all thing a lot
-simpler, but that's not ready today.
+simpler, but that's not ready today. It works currently on latest wine and latest box64, but it's buggy.
 
 # PROCEDURE FOR WINE/BOX64/BOX86
 
@@ -30,8 +30,7 @@ We are going to use armbian ubuntu jammy on mainline on a panfrost mesa powered 
 - If you dont have armhf added by default like on armbian/your linux distro, before installing the 32 bit armhf userspace libs you need to add armhf architecture first.
 
 ```
- sudo dpkg --add-architecture armhf
- sudo apt update
+ sudo dpkg --add-architecture armhf &&  sudo apt update
 ```
 Then, on a terminal we do..
 
@@ -53,25 +52,27 @@ Note that Ryan added specific platform target builds, but we are going to use th
 
 **IF YOU USE MODERN ARMBIAN, BOX86/BOX64 PACKAGES ARE AVAILABLE FROM ARMBIAN, YOU DON'T NEED RYAN REPOS THEN. AFTER AN UPDATE, DO "APT INSTALL BOX86 OR BOX64" AND PRESS TAB TO SEE THEM** 
 
-**RK3588 ONLY** 
+**RK3588 on RK LINUX ONLY** 
 
 ```
-sudo wget https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list
-sudo wget https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list
-wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg
-wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg 
-sudo apt update && sudo apt install box86-rk3588 box64-rk3588 -y
+sudo wget https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list \
+&& sudo wget https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
+&& wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg \
+&& wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
+&& sudo apt update \
+&& sudo apt install box86-rk3588 box64-rk3588 -y
 ```
 
 
 **ANY OTHER ARM64 MAINLINE LINUX PLATFORM** 
 
 ```
-sudo wget https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list
-sudo wget https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list
-wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg
-wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg 
-sudo apt update && sudo apt install box86-generic-arm box64-generic-arm -y
+sudo wget https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list \
+&& sudo wget https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
+&& wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg \
+&& wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
+&& sudo apt update \
+&& sudo apt install box86-generic-arm box64-generic-arm -y
 ```
 
 3. Since you are on a Panfrost (MESA FOSS GPU driver) powered SBC on mainline (RPI4 also has mesa drivers but this only applies to panfrost and rk3588 uses a hacky panfrost while not on mainline), we will need OpenGL 3.3 for many games, so we should force it:
@@ -88,7 +89,7 @@ sudo apt update && sudo apt install box86-generic-arm box64-generic-arm -y
 
 5. **Note:** if you installed wine (arm64 or armhf) or winetricks with apt, remove them, wine ARM will not be usefull for mostly anything here since they arent that much arm64 windows apps, not even legally accesible outside windows on ARM most probably.
 
-    - installing WINE x86 or x86_64 (that has both, x86 and x86_64). okay, download a copy from https://github.com/Kron4ek/Wine-Builds/releases ,I would recommend x86 stagging or stable, you can also get the proton variant from there.
+    - installing WINE x86 or x86_64 (that has both, x86 and x86_64). okay, download a copy from https://github.com/Kron4ek/Wine-Builds/releases ,I would recommend x86 stagging or stable, you can also get the proton variant from there. I would extremely recommend wine x86 stable 8.0 or orlder and wine64 only if you plan to only use box64 and clean wine64 (with 32 bit programs running on syswow64)
     - uncompress it, rename the folder "wine" and place it at your `/home/your_user/` directory.
 
 
@@ -100,15 +101,10 @@ So we do the next thing from terminal to create those links:
 
 
 ```
- sudo ln -s ~/wine/bin/wine        /usr/local/bin/
- sudo ln -s ~/wine/bin/winecfg     /usr/local/bin/
- sudo ln -s ~/wine/bin/wineserver  /usr/local/bin/
-```
-
-Only if you plan to use box64 and wine x86_64, then:
-
-```
- sudo ln -s ~/wine/bin/wine64 /usr/local/bin/
+sudo ln -s ~/wine/bin/wine /usr/local/bin/ \
+&& sudo ln -s ~/wine/bin/winecfg /usr/local/bin/ \
+&& sudo ln -s ~/wine/bin/wineserver /usr/local/bin/ \
+&& sudo ln -s ~/wine/bin/wine64 /usr/local/bin/
 ```
 
 Now we can launch wine to create the fake `c:` drive and the first setup, so type on terminal `winecfg` and install mono if it pop ups, etc, set xp for compat reasons and if you want to use a virtual windows, also set that.
@@ -118,21 +114,10 @@ winetricks allow us to easily install some windows libraries that arent working 
 
 So, we get winetricks from terminal like this: 
 
-
 ```
- wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
-```
-
-then we enable it as executable with:
-
-```
- sudo chmod +x winetricks
-```
-
-and then we move it to `/usr/local/bin` with
-
-```
- sudo mv winetricks /usr/local/bin
+wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks \
+&& sudo chmod +x winetricks \
+&& sudo mv winetricks /usr/local/bin
 ```
 
 NOTE: This winetricks thingy takes an hour to complete, you can just try to use proton wine that comes with some stuff already preinstalled
@@ -142,10 +127,10 @@ Installing the essentials (I consider them like that) from terminal with:
 
 ```
  W_OPT_UNATTENDED=1 winetricks mfc42 vcrun6 vb6run vcrun2003 xact d3drm d3dx9_43 d3dcompiler_43 \
- d3dx9 fontfix dotnet20 msxml3 vcrun2005sp1 vcrun2008 fontsmooth=rgb
+ d3dx9 fontfix msxml3 vcrun2005sp1 vcrun2008 fontsmooth=rgb
 ```
   
-It will take some time...specially from sd systems, I would just try proton wine first and do not attempt this setup.
+It will take some time...specially from sdcard systems.
 
 If you have a dxvk capable gpu, also install that one from winetricks.
   
