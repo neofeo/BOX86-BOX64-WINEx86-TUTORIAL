@@ -148,8 +148,7 @@ and then skipt this libraries instalation process.
 Installing the essentials (I consider them like that) from terminal with:
 
 ```
- W_OPT_UNATTENDED=1 winetricks mfc42 vcrun6 vb6run vcrun2003 xact d3drm d3dx9_43 d3dcompiler_43 \
- d3dx9 fontfix msxml3 vcrun2005sp1 vcrun2008 fontsmooth=rgb
+ W_OPT_UNATTENDED=1 winetricks mfc42 vcrun6 vb6run xact d3drm d3dx9 d3dx9_43 d3dcompiler_43 msxml3 vcrun2003 vcrun2005 vcrun2008
 ```
   
 It will take some time...specially from sdcard systems.
