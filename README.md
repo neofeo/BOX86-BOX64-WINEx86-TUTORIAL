@@ -92,6 +92,28 @@ sudo wget https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/source
     - installing WINE x86 or x86_64 (that has both, x86 and x86_64). okay, download a copy from https://github.com/Kron4ek/Wine-Builds/releases ,I would recommend x86 stagging or stable, you can also get the proton variant from there. I would extremely recommend wine x86 stable 8.0 or orlder and wine64 only if you plan to only use box64 and clean wine64 (with 32 bit programs running on syswow64)
     - uncompress it, rename the folder "wine" and place it at your `/home/your_user/` directory.
 
+I will give you two options for a quick setup:
+
+wine 7.0 (recommended)
+
+```
+wget -O ~/wine-7.0-x86.tar.xz https://github.com/Kron4ek/Wine-Builds/releases/download/7.0/wine-7.0-x86.tar.xz \
+&& tar -xf ~/wine-7.0-x86.tar.xz -C ~/ \
+&& mv ~/wine-7.0-x86 ~/wine \
+&& rm ~/wine-7.0-x86.tar.xz
+```
+
+wine 8.0 (there is a memory leak problem on this one)
+
+
+```
+wget -O ~/wine-8.0-x86.tar.xz https://github.com/Kron4ek/Wine-Builds/releases/download/8.0/wine-8.0-x86.tar.xz \
+&& tar -xf ~/wine-8.0-x86.tar.xz -C ~/ \
+&& mv ~/wine-8.0-x86 ~/wine \
+&& rm ~/wine-8.0-x86.tar.xz
+```
+
+
 
 6. Ending wine setup..
 

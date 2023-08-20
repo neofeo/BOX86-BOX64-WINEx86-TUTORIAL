@@ -1,0 +1,10 @@
+[Desktop Entry]
+StartupNotify=true
+Terminal=false
+Type=Application
+Name=Wine launcher
+Exec=.local/share/applications/wine_launcher.sh %u
+Icon=wine
+Categories=System;
+Comment=Wine Launcher
+
