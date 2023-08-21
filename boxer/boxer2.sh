@@ -30,7 +30,7 @@ fi
 
 # Panfrost check
 echo "Checking for Panfrost driver..."
-sudo apt install -qq -y mesa-utils
+sudo apt install -qq -y mesa-utils neofetch
 glxinfo -B | awk '/Device:/ { if (tolower($0) ~ /panfrost/) exit 0; else exit 1; }'
 if [ $? -ne 0 ]; then
     echo -e "${RED}Panfrost driver not detected. Exiting...${NC}"
@@ -180,18 +180,18 @@ chmod +x  ~/.local/share/applications/wine_launcher.sh
 echo "wine.desktop and wine_launcher.sh installed."
 
 # Set up custom keyboard shortcut for killing Wine
-if [ "$WAYLAND_DISPLAY" ]; then
-    echo "Setting up custom keyboard shortcut for killing Wine on Wayland..."
-    # Add Wayland-specific command here
-    echo "You can now use the Left Ctrl + Q shortcut to quickly kill any Wine processes."
-elif [ "$DESKTOP_ENV" == "gnome" ]; then
+echo -e "${RED}Setting up custom keyboard shortcut for killing Wine...${NC}"
+
+desktop_environment=$(neofetch --stdout | awk '/DE:/ {print tolower($2)}')
+
+if [ "$desktop_environment" == "gnome" ]; then
     echo "Setting up custom keyboard shortcut for killing Wine on Xorg..."
     gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']"
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ name 'Kill Wine (wineserver -k)'
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ command 'wineserver -k'
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ binding '<Primary>q'
     echo "You can now use the Left Ctrl + Q shortcut to quickly kill any Wine processes."
-elif [ "$DESKTOP_ENV" == "xfce" ]; then
+elif [ "$desktop_environment" == "xfce" ]; then
     echo "Setting up custom keyboard shortcut for killing Wine..."
     xfconf-query -c xfce4-keyboard-shortcuts -p "/commands/custom/<Primary>q" -n -t string -s "wineserver -k"
     echo "You can now use the Left Ctrl + Q shortcut to quickly kill any Wine processes."
@@ -199,12 +199,11 @@ else
     echo -e "${RED}Unsupported desktop environment. No custom keyboard shortcut set for killing Wine.${NC}"
 fi
 
-
-# Download and install Wine Mono
-echo -e "${RED}Downloading and installing Wine Mono...${NC}"
+# Download and install Wine Mono 8.0
+echo -e "${RED}Downloading and installing Wine Mono 8.0...${NC}"
 mkdir -p ~/wine/share/wine/mono/
-wget https://dl.winehq.org/wine/wine-mono/6.4.0/wine-mono-6.4.0-x86.msi -P ~/wine/share/wine/mono/
-WINEPREFIX=~/wine ~/wine/bin/wine msiexec /i ~/wine/share/wine/mono/wine-mono-6.4.0-x86.msi
+wget https://dl.winehq.org/wine/wine-mono/8.0.0/wine-mono-8.0.0-x86.msi -P ~/wine/share/wine/mono/
+WINEPREFIX=~/wine ~/wine/bin/wine msiexec /i ~/wine/share/wine/mono/wine-mono-8.0.0-x86.msi
 
 # Unattended setup of Mono
 echo -e "${RED}Setting up Mono (unattended)...${NC}"

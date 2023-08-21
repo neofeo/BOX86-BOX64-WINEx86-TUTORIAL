@@ -15,7 +15,7 @@
 
 			opp07 {
 				opp-hz = <0x00 0x6b49d200>;
-				opp-microvolt = <0x124f80 0x124f80 0x13d620>;
+				opp-microvolt = <0x1312d0 0x124f80 0x13d620>;
 			};
 		};
 	};
@@ -27,7 +27,7 @@
 
 			opp08 {
 				opp-hz = <0x00 0x7829b800>;
-				opp-microvolt = <0x138800 0x138800 0x13d620>;
+				opp-microvolt = <0x129da0 0x138800 0x13d620>;
 			};
 
 			opp09 {
