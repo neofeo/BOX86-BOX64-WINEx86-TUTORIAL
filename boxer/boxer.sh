@@ -33,6 +33,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "This script it's a WIP for installing Box86/Box64/Winex86 on ARM Linux Debian/Ubuntu platforms that aren't RPI. It could destroy your system, beware, multiarch isn't a toy"
+echo "inform me of any problem at https://discord.com/invite/armbian , I am Microlinux(salva)."
 echo "We are going to setup a multiarch platform and install Box86 and Box64, then you will be asked to install Wine or not."
 
 # Add armhf architecture and update
@@ -235,3 +236,26 @@ fi
 
 
 echo "Hopefully everything works fine now. You should reboot just in case to get the mesa env var working (so, OpenGL 3.3, mostly for the linux x86_64 and x86 games)"
+
+# Ask user if they want to reboot
+echo "Do you want to reboot your system?"
+select reboot_choice in "Yes" "No"; do
+    case $reboot_choice in
+        Yes)
+            echo "Rebooting..."
+            sudo reboot
+            break
+            ;;
+        No)
+            echo "You can manually reboot your system later."
+            break
+            ;;
+        *)
+            echo "Invalid selection, please choose a valid option."
+            ;;
+    esac
+done
+
+
+
+
