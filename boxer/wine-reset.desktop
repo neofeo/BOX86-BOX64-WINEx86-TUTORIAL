@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Wine Reset
+Comment=Clean out the default Wine prefix.
+Icon=wine-reset
+Exec=zenity --question --text "This will delete all files in the Wine prefix. Are you sure you want to continue?" && rm -rf $HOME/.wine && wineboot
+Terminal=false
+Categories=System;

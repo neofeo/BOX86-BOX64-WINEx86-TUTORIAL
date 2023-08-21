@@ -1,0 +1,9 @@
+[Desktop Entry]
+StartupNotify=true
+Terminal=false
+Type=Application
+Name=Wine Configuration
+Exec=wine winecfg
+Icon=winecfg.png
+Categories=System;
+Comment=Configure wine
