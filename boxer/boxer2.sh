@@ -171,11 +171,24 @@ else
     exit 1
 fi
 
-# Download and install wine.desktop and wine_launcher.sh
-echo "Downloading and installing wine.desktop and wine_launcher.sh..."
-wget -q https://raw.githubusercontent.com/neofeo/BOX86-BOX64-WINEx86-TUTORIAL/main/boxer/wine.desktop -O ~/.local/share/applications/wine.desktop
-wget -q https://raw.githubusercontent.com/neofeo/BOX86-BOX64-WINEx86-TUTORIAL/main/boxer/wine_launcher.sh -O ~/.local/share/applications/wine_launcher.sh
-chmod +x  ~/.local/share/applications/wine_launcher.sh
+# Clone the GitHub repository for the shortcuts.
+echo -e "${RED}Cloning the BOX86-BOX64-WINEx86-TUTORIAL repository...${NC}"
+git clone https://github.com/neofeo/BOX86-BOX64-WINEx86-TUTORIAL.git ~/boxer
+
+# Check if .icons folder exists, create it if not
+if [ ! -d ~/.icons ]; then
+    echo -e "${RED}.icons folder doesn't exist, creating...${NC}"
+    mkdir -p ~/.icons
+fi
+
+# Copy icons from the cloned repository to ~/.icons
+echo -e "${RED}Copying icon files to .icons folder...${NC}"
+cp -r ~/boxer/icons/* ~/.icons/
+
+# Copy the desktop entries from the cloned repository to ~/.local/share/applications/
+echo -e "${RED}Copying the desktop entries...${NC}"
+cp -r ~/boxer/shortcuts/* ~/.local/share/applications/
+chmod +x ~/.local/share/applications/wine_launcher.sh
 
 echo "wine.desktop and wine_launcher.sh installed."
 
@@ -211,7 +224,7 @@ WINE_MONO=--unattended WINEPREFIX=~/wine ~/wine/bin/wineboot
 
 
 # Ask user if they want to install additional components with winetricks
-echo -e "${RED}Do you want to install additional components using winetricks?${NC}"
+echo -e "${RED}Do you want to install additional components using winetricks? It will take a while, 15 mins aprox.${NC}"
 echo -e "${RED}Components to be installed: mfc42 vcrun6 vb6run xact d3drm d3dx9 d3dx9_43 d3dcompiler_43 msxml3 vcrun2003 vcrun2005 vcrun2008${NC}"
 select install_winetricks in "Yes" "No"; do
     case $install_winetricks in
