@@ -155,6 +155,31 @@ else
     exit 1
 fi
 
+# Download and install wine.desktop and wine_launcher.sh
+echo "Downloading and installing wine.desktop and wine_launcher.sh..."
+wget https://raw.githubusercontent.com/neofeo/BOX86-BOX64-WINEx86-TUTORIAL/main/boxer/wine.desktop -O ~/.local/share/applications/wine.desktop
+wget https://raw.githubusercontent.com/neofeo/BOX86-BOX64-WINEx86-TUTORIAL/main/boxer/wine_launcher.sh -O ~/wine_launcher.sh
+chmod +x ~/wine_launcher.sh
+
+echo "wine.desktop and wine_launcher.sh installed."
+
+# Set up custom keyboard shortcut for killing Wine
+if [ "$DESKTOP_ENV" == "GNOME" ]; then
+    echo "Setting up custom keyboard shortcut for killing Wine..."
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ name 'Kill Wine (wineserver -k)'
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ command 'wineserver -k'
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ binding '<Primary>q'
+    gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']"
+    echo "You can now use the Left Ctrl + Q shortcut to quickly kill any Wine processes."
+elif [ "$DESKTOP_ENV" == "XFCE" ]; then
+    echo "Setting up custom keyboard shortcut for killing Wine..."
+    xfconf-query -c xfce4-keyboard-shortcuts -p "/commands/custom/<Primary>q" -n -t string -s "wineserver -k"
+    echo "You can now use the Left Ctrl + Q shortcut to quickly kill any Wine processes."
+else
+    echo "Unsupported desktop environment. No custom keyboard shortcut set for killing Wine."
+fi
+
+
 # Unattended setup of Mono
 echo "Setting up Mono (unattended)..."
 WINE_MONO=--unattended ~/wine/bin/wineboot
@@ -209,4 +234,4 @@ if [ "$PLATFORM" != "rockchip-rk3588" ]; then
 fi
 
 
-echo "Hopefully everything works fine now. You should reboot just in case"
+echo "Hopefully everything works fine now. You should reboot just in case to get the mesa env var working (so, OpenGL 3.3, mostly for the linux x86_64 and x86 games)"
