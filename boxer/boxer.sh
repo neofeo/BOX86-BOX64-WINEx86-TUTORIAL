@@ -1,24 +1,35 @@
 #!/bin/bash
 
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
 # Gather system information
 DISTRO=$(lsb_release -is 2>/dev/null)
 ARCH=$(uname -m)
 KERNEL=$(uname -r)
+export BOX86_NOBANNER=1
+
+# Check Internet Connection
+if ! ping -c 1 google.com &> /dev/null; then
+    echo -e "${RED}No internet connection. Exiting...${NC}"
+    exit 1
+fi
 
 # Check if the distro is Debian or Ubuntu
 if [ "$DISTRO" != "Debian" ] && [ "$DISTRO" != "Ubuntu" ]; then
-    echo "This script only supports Debian and Ubuntu."
+    echo -e "${RED}This script only supports Debian and Ubuntu.${NC}"
     exit 1
 fi
 
 # Check if the architecture is ARM64
 if [ "$ARCH" != "aarch64" ]; then
-    echo "This script is intended for ARM64 platforms."
+    echo -e "${RED}This script is intended for ARM64 platforms.${NC}"
     exit 1
 fi
 
-# Check if the kernel is specific to Rockchip RK3588
-if [[ "$KERNEL" == *"rockchip-rk3588"* ]]; then
+# Check if the kernel version contains "5.10" and "rockchip"
+KERNEL_VERSION=$(uname -r)
+if [[ "$KERNEL_VERSION" == *"5.10"* && "$KERNEL_VERSION" == *"rockchip"* ]]; then
     PLATFORM="rockchip-rk3588"
 else
     PLATFORM="mainline"
@@ -26,20 +37,24 @@ fi
 
 # Panfrost check
 echo "Checking for Panfrost driver..."
-sudo apt install mesa-utils
+sudo apt install -qq -y mesa-utils neofetch
 glxinfo -B | awk '/Device:/ { if (tolower($0) ~ /panfrost/) exit 0; else exit 1; }'
 if [ $? -ne 0 ]; then
-    echo "Panfrost driver not detected. Exiting..."
+    echo -e "${RED}Panfrost driver not detected. Exiting...${NC}"
     exit 1
 fi
 
-echo "This script it's a WIP for installing Box86/Box64/Winex86 on ARM Linux Debian/Ubuntu platforms that aren't RPI. It could destroy your system, beware, multiarch isn't a toy"
-echo "inform me of any problem at https://discord.com/invite/armbian , I am Microlinux(salva)."
-echo "We are going to setup a multiarch platform and install Box86 and Box64, then you will be asked to install Wine or not."
+echo -e "${RED}This script is a WIP for installing Box86/Box64/Winex86 on ARM Linux Debian/Ubuntu platforms that aren't RPI. It could destroy your system, beware; multiarch isn't a toy.${NC}"
+echo -e "${RED}If you encounter any problems, inform me at https://discord.com/invite/armbian. I am Microlinux (salva).${NC}"
+echo -e "${RED}We are going to set up a multiarch platform and install Box86 and Box64, then you will be asked to install Wine or not.${NC}"
 
-# Add armhf architecture and update
-echo "Adding armhf architecture and updating..."
-sudo dpkg --add-architecture armhf && sudo apt update
+# Check if armhf architecture is already added
+dpkg --print-foreign-architectures | grep -q "armhf"
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Adding armhf architecture and updating...${NC}"
+    sudo dpkg --add-architecture armhf
+    sudo apt -qq update
+fi
 
 # List of required packages
 PACKAGES=(
@@ -69,16 +84,16 @@ PACKAGES=(
 )
 
 # Install required packages and handle conflicts
-echo "Installing essential 32-bit ARM packages for Box86..."
+echo -e "${RED}Installing essential 32-bit ARM packages for Box86...${NC}"
 while [ ${#PACKAGES[@]} -gt 0 ]; do
-    sudo apt install -y "${PACKAGES[@]}"
+    sudo apt install -qq -y "${PACKAGES[@]}"
     if [ $? -ne 0 ]; then
         conflicting_package=$(sudo apt-get -s -o Debug::NoLocking=true install "${PACKAGES[@]}" 2>&1 | awk '/Conflicting packages/{print $NF}')
         if [ -n "$conflicting_package" ]; then
-            echo "Conflicting package detected: $conflicting_package. Removing from the list and retrying installation..."
+            echo -e "${RED}Conflicting package detected: $conflicting_package. Removing from the list and retrying installation...${NC}"
             PACKAGES=("${PACKAGES[@]/$conflicting_package}")
         else
-            echo "Installation failed due to other reasons. Exiting..."
+            echo -e "${RED}Installation failed due to other reasons. Exiting...${NC}"
             exit 1
         fi
     else
@@ -86,14 +101,16 @@ while [ ${#PACKAGES[@]} -gt 0 ]; do
     fi
 done
 
-# Install Box86 and Box64
-echo "Setting up for $PLATFORM platform..."
-echo "Installing Box86 and Box64..."
-sudo wget https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list
-sudo wget https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list
-wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg
-wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg
-sudo apt update
+# Check if Box86 and Box64 PPAs are already added
+if ! grep -q "ryanfortner.github.io" /etc/apt/sources.list.d/box86.list /etc/apt/sources.list.d/box64.list; then
+    echo -e "${RED}Setting up for $PLATFORM platform...${NC}"
+    echo -e "${RED}Installing Box86 and Box64...${NC}"
+    sudo wget https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list
+    sudo wget https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list
+    wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg
+    wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg
+    sudo apt -qq update
+fi
 
 if [ "$PLATFORM" == "rockchip-rk3588" ]; then
     sudo apt install box86-rk3588 box64-rk3588 -y
@@ -101,18 +118,23 @@ else
     sudo apt install box86-generic-arm box64-generic-arm -y
 fi
 
-# Set PAN_MESA_DEBUG for OpenGL 3.3
-echo "Setting PAN_MESA_DEBUG environment variable..."
-sudo bash -c "echo 'PAN_MESA_DEBUG=gl3' >> /etc/environment"
+
+# Set PAN_MESA_DEBUG for OpenGL 3.3 if not already set
+if [[ -z $(grep "PAN_MESA_DEBUG=gl3" /etc/environment) ]]; then
+    echo "Setting PAN_MESA_DEBUG environment variable..."
+    echo "PAN_MESA_DEBUG=gl3" | sudo tee -a /etc/environment > /dev/null
+else
+    echo "PAN_MESA_DEBUG environment variable already set. Skipping."
+fi
+
 
 # Prompt user for Wine version choice
-echo "Do you want to install Wine x86 (32-bit) version 8.0 or 7.0? Wine x86_64 (amd64) is not the main focus for now, but may be added later."
-"
+echo -e "${RED}Do you want to install Wine x86 (32-bit) version 8.0 or 7.0? Wine x86_64 (amd64) is not the main focus for now, but may be added later.${NC}"
 select wine_version in "7.0" "8.0" "No"; do
     case $wine_version in
         7.0)
             echo "Installing Wine 7.0 x86..."
-            wget -O ~/wine-7.0-x86.tar.xz https://github.com/Kron4ek/Wine-Builds/releases/download/7.0/wine-7.0-x86.tar.xz
+            wget -q -O ~/wine-7.0-x86.tar.xz https://github.com/Kron4ek/Wine-Builds/releases/download/7.0/wine-7.0-x86.tar.xz
             tar -xf ~/wine-7.0-x86.tar.xz -C ~/
             mv ~/wine-7.0-x86 ~/wine
             rm ~/wine-7.0-x86.tar.xz
@@ -120,7 +142,7 @@ select wine_version in "7.0" "8.0" "No"; do
             ;;
         8.0)
             echo "Installing Wine 8.0 x86..."
-            wget -O ~/wine-8.0-x86.tar.xz https://github.com/Kron4ek/Wine-Builds/releases/download/8.0/wine-8.0-x86.tar.xz
+            wget -q -O ~/wine-8.0-x86.tar.xz https://github.com/Kron4ek/Wine-Builds/releases/download/8.0/wine-8.0-x86.tar.xz
             tar -xf ~/wine-8.0-x86.tar.xz -C ~/
             mv ~/wine-8.0-x86 ~/wine
             rm ~/wine-8.0-x86.tar.xz
@@ -128,10 +150,10 @@ select wine_version in "7.0" "8.0" "No"; do
             ;;
         No)
             echo "Skipping Wine installation."
-            break
+            exit 0  # Add this line to exit the script gracefully
             ;;
         *)
-            echo "Invalid selection, please choose a valid option."
+            echo -e "${RED}Invalid selection, please choose a valid option.${NC}"
             ;;
     esac
 done
@@ -145,50 +167,88 @@ sudo ln -s ~/wine/bin/wine64 /usr/local/bin/
 
 # setup winetricks
 echo "Installing winetricks..."
-wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
-sudo chmod +x winetricks \
+wget -q https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+sudo chmod +x winetricks
 sudo mv winetricks /usr/local/bin
 
 # Verify Wine installation
 if wine --version &>/dev/null; then
-    echo "Wine installation seems successful. Continuing with the setup"
+    echo "Wine installation seems successful. Continuing with the setup."
 else
-    echo "Wine installation failed."
+    echo -e "${RED}Wine installation failed.${NC}"
     exit 1
 fi
 
-# Download and install wine.desktop and wine_launcher.sh
-echo "Downloading and installing wine.desktop and wine_launcher.sh..."
-wget https://raw.githubusercontent.com/neofeo/BOX86-BOX64-WINEx86-TUTORIAL/main/boxer/wine.desktop -O ~/.local/share/applications/wine.desktop
-wget https://raw.githubusercontent.com/neofeo/BOX86-BOX64-WINEx86-TUTORIAL/main/boxer/wine_launcher.sh -O ~/wine_launcher.sh
-chmod +x ~/wine_launcher.sh
+# Clone the GitHub repository for the shortcuts
+echo -e "${RED}Cloning the BOX86-BOX64-WINEx86-TUTORIAL repository...${NC}"
+git clone https://github.com/neofeo/BOX86-BOX64-WINEx86-TUTORIAL.git ~/boxer_repo
 
-echo "wine.desktop and wine_launcher.sh installed."
+# Check if .icons folder exists, create it if not
+if [ ! -d ~/.icons ]; then
+    echo -e "${RED}.icons folder doesn't exist, creating...${NC}"
+    mkdir -p ~/.icons
+fi
+
+# Copy icons from the cloned repository to ~/.icons
+echo -e "${RED}Copying icon files to .icons folder...${NC}"
+cp -r ~/boxer_repo/boxer/icons/* ~/.icons/
+
+# Copy the desktop entries from the cloned repository to ~/.local/share/applications/
+echo -e "${RED}Copying the desktop entries...${NC}"
+cp -r ~/boxer_repo/boxer/shortcuts/* ~/.local/share/applications/
+chmod +x ~/.local/share/applications/wine_launcher.sh
+
+echo "Shortcuts were installed."
+
+# Remove the cloned repository folder
+echo -e "${RED}Removing cloned repository folder...${NC}"
+rm -rf ~/boxer_repo
+
+echo "Repository folder removed."
 
 # Set up custom keyboard shortcut for killing Wine
-if [ "$DESKTOP_ENV" == "GNOME" ]; then
+echo -e "${RED}Setting up custom keyboard shortcut for killing Wine...${NC}"
+
+desktop_environment=$(neofetch --stdout | awk '/DE:/ {print tolower($2)}')
+
+if [ "$desktop_environment" == "gnome" ]; then
     echo "Setting up custom keyboard shortcut for killing Wine..."
+    gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']"
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ name 'Kill Wine (wineserver -k)'
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ command 'wineserver -k'
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ binding '<Primary>q'
-    gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']"
     echo "You can now use the Left Ctrl + Q shortcut to quickly kill any Wine processes."
-elif [ "$DESKTOP_ENV" == "XFCE" ]; then
+
+    # Set default application for .exe files to wine-launcher.desktop
+    gsettings set org.gnome.desktop.default-applications.executable wine-launcher.desktop
+    gsettings set org.gnome.desktop.default-applications.package wine-launcher.desktop
+    gsettings set org.gnome.desktop.default-applications.priority 2
+elif [ "$desktop_environment" == "xfce" ]; then
     echo "Setting up custom keyboard shortcut for killing Wine..."
     xfconf-query -c xfce4-keyboard-shortcuts -p "/commands/custom/<Primary>q" -n -t string -s "wineserver -k"
     echo "You can now use the Left Ctrl + Q shortcut to quickly kill any Wine processes."
 else
-    echo "Unsupported desktop environment. No custom keyboard shortcut set for killing Wine."
+    echo -e "${RED}Unsupported desktop environment. No custom keyboard shortcut set for killing Wine.${NC}"
 fi
 
+# Set default application for .exe files to wine-launcher.desktop
+xdg-mime default wine.desktop application/x-ms-dos-executable
+
+# Download and install Wine Mono 8.0
+#echo -e "${RED}Downloading and installing Wine Mono 8.0...${NC}"
+#mkdir -p ~/wine/share/wine/mono/
+#wget https://dl.winehq.org/wine/wine-mono/8.0.0/wine-mono-8.0.0-x86.msi -P ~/wine/share/wine/mono/
+#WINEPREFIX=~/wine ~/wine/bin/wine msiexec /i ~/wine/share/wine/mono/wine-mono-8.0.0-x86.msi
 
 # Unattended setup of Mono
-echo "Setting up Mono (unattended)..."
-WINE_MONO=--unattended ~/wine/bin/wineboot
+#echo -e "${RED}Setting up Mono (unattended)...${NC}"
+#WINE_MONO=--unattended WINEPREFIX=~/wine ~/wine/bin/wineboot
 
-# Prompt user for installing components with winetricks
-echo "Do you want to install additional components using winetricks?"
-echo "Components to be installed: mfc42 vcrun6 vb6run xact d3drm d3dx9 d3dx9_43 d3dcompiler_43 msxml3 vcrun2003 vcrun2005 vcrun2008"
+~/wine/bin/wineboot
+
+# Ask user if they want to install additional components with winetricks
+echo -e "${RED}Do you want to install additional components using winetricks? It will take a while, 15 mins aprox.${NC}"
+echo -e "${RED}Components to be installed: mfc42 vcrun6 vb6run xact d3drm d3dx9 d3dx9_43 d3dcompiler_43 msxml3 vcrun2003 vcrun2005 vcrun2008${NC}"
 select install_winetricks in "Yes" "No"; do
     case $install_winetricks in
         Yes)
@@ -201,26 +261,25 @@ select install_winetricks in "Yes" "No"; do
             break
             ;;
         *)
-            echo "Invalid selection, please choose a valid option."
+            echo -e "${RED}Invalid selection, please choose a valid option.${NC}"
             ;;
     esac
 done
 
-
 # Ask user if they want to upgrade Mesa drivers
 if [ "$PLATFORM" != "rockchip-rk3588" ]; then
-    echo "Do you want to upgrade Mesa drivers for the latest Panfrost (may be unstable)?"
+    echo -e "${RED}Do you want to upgrade Mesa drivers for the latest Panfrost (may be unstable)?${NC}"
     select upgrade_mesa in "Yes" "No"; do
         case $upgrade_mesa in
             Yes)
                 echo "Upgrading Mesa drivers for Panfrost..."
                 if [ "$DISTRO" == "Ubuntu" ] || [ "$DISTRO" == "Debian" ]; then
                     sudo add-apt-repository --yes ppa:oibaf/graphics-drivers
-                    sudo apt update
-                    sudo apt install mesa-va-drivers:armhf mesa-va-drivers libd3dadapter9-mesa:armhf -y
-                    echo "After this, you can try galliumnine (Native Dx9) after installing 'nine' with 'winetricks galliumnine' and launching 'wine ninewinecfg' to check if it works."
+                    sudo apt -qq update
+                    sudo apt -qq install mesa-va-drivers:armhf mesa-va-drivers libd3dadapter9-mesa:armhf -y
+                    echo -e "${RED}After this, you can try galliumnine (Native Dx9) after installing 'nine' with 'winetricks galliumnine' and launching 'wine ninewinecfg' to check if it works.${NC}"
                 else
-                    echo "Unsupported distribution for Mesa driver upgrade."
+                    echo -e "${RED}Unsupported distribution for Mesa driver upgrade.${NC}"
                 fi
                 break
                 ;;
@@ -229,17 +288,16 @@ if [ "$PLATFORM" != "rockchip-rk3588" ]; then
                 break
                 ;;
             *)
-                echo "Invalid selection, please choose a valid option."
+                echo -e "${RED}Invalid selection, please choose a valid option.${NC}"
                 ;;
         esac
     done
 fi
 
-
-echo "Hopefully everything works fine now. You should reboot just in case to get the mesa env var working (so, OpenGL 3.3, mostly for the linux x86_64 and x86 games)"
+echo -e "${RED}Hopefully everything works fine now. You should reboot just in case to get the mesa env var working (so, OpenGL 3.3, mostly for the Linux x86_64 and x86 games).${NC}"
 
 # Ask user if they want to reboot
-echo "Do you want to reboot your system?"
+echo -e "${RED}Do you want to reboot your system?${NC}"
 select reboot_choice in "Yes" "No"; do
     case $reboot_choice in
         Yes)
@@ -252,7 +310,7 @@ select reboot_choice in "Yes" "No"; do
             break
             ;;
         *)
-            echo "Invalid selection, please choose a valid option."
+            echo -e "${RED}Invalid selection, please choose a valid option.${NC}"
             ;;
     esac
 done
