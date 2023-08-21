@@ -219,15 +219,13 @@ if [ "$desktop_environment" == "gnome" ]; then
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ binding '<Primary>q'
     echo "You can now use the Left Ctrl + Q shortcut to quickly kill any Wine processes."
 
-    # Set default application for .exe files to wine-launcher.desktop
-    gsettings set org.gnome.desktop.default-applications.executable wine-launcher.desktop
-    gsettings set org.gnome.desktop.default-applications.package wine-launcher.desktop
-    gsettings set org.gnome.desktop.default-applications.priority 2
+    # Set default application for .exe files to wine.desktop
+    xdg-mime default wine.launcher.desktop application/x-ms-dos-executable
 elif [ "$desktop_environment" == "xfce" ]; then
     echo "Setting up custom keyboard shortcut for killing Wine..."
     xfconf-query -c xfce4-keyboard-shortcuts -p "/commands/custom/<Primary>q" -n -t string -s "wineserver -k"
     echo "You can now use the Left Ctrl + Q shortcut to quickly kill any Wine processes."
-    # Set default application for .exe files to wine-launcher.desktop
+    # Set default application for .exe files to wine.desktop
     xdg-mime default wine.launcher.desktop application/x-ms-dos-executable
 else
     echo -e "${RED}Unsupported desktop environment. No custom keyboard shortcut set for killing Wine.${NC}"
@@ -237,7 +235,7 @@ fi
 # Download and install Wine Mono 8.0
 echo -e "${RED}Downloading and installing Wine Mono 8.0...${NC}"
 mkdir -p ~/.cache/wine/
-wget https://dl.winehq.org/wine/wine-mono/8.0.0/wine-mono-8.0.0-x86.msi -P ~/.cache/wine/
+wget https://dl.winehq.org/wine/wine-mono/7.4.0/wine-mono-7.4.0-x86.msi -P ~/.cache/wine/
 #WINEPREFIX=~/wine ~/wine/bin/wine msiexec /i ~/wine/share/wine/mono/wine-mono-8.0.0-x86.msi
 
 # Unattended setup of Mono
