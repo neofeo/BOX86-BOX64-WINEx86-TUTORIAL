@@ -220,13 +220,13 @@ if [ "$desktop_environment" == "gnome" ]; then
     echo "You can now use the Left Ctrl + Q shortcut to quickly kill any Wine processes."
 
     # Set default application for .exe files to wine.desktop
-    xdg-mime default wine.launcher.desktop application/x-ms-dos-executable
+    xdg-mime default wine.desktop application/x-ms-dos-executable
 elif [ "$desktop_environment" == "xfce" ]; then
     echo "Setting up custom keyboard shortcut for killing Wine..."
     xfconf-query -c xfce4-keyboard-shortcuts -p "/commands/custom/<Primary>q" -n -t string -s "wineserver -k"
     echo "You can now use the Left Ctrl + Q shortcut to quickly kill any Wine processes."
     # Set default application for .exe files to wine.desktop
-    xdg-mime default wine.launcher.desktop application/x-ms-dos-executable
+    xdg-mime default wine.desktop application/x-ms-dos-executable
 else
     echo -e "${RED}Unsupported desktop environment. No custom keyboard shortcut set for killing Wine.${NC}"
 fi
