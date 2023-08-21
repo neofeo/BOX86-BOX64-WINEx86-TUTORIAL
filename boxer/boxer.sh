@@ -26,6 +26,7 @@ fi
 
 # Panfrost check
 echo "Checking for Panfrost driver..."
+sudo apt install mesa-utils
 glxinfo -B | awk '/Device:/ { if (tolower($0) ~ /panfrost/) exit 0; else exit 1; }'
 if [ $? -ne 0 ]; then
     echo "Panfrost driver not detected. Exiting..."
