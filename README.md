@@ -22,6 +22,12 @@ simpler, but that's not ready today. It works currently on latest wine and lates
 
 # PROCEDURE FOR WINE/BOX64/BOX86
 
+**Note:** BOX86/64/WINE SCRIPT
+
+```
+wget https://github.com/neofeo/BOX86-BOX64-WINEx86-TUTORIAL/blob/main/boxer/boxer.sh
+```
+
 We are going to use armbian ubuntu jammy on mainline on a panfrost mesa powered ARM64 system on this case since those are the systems I use. We are also going to use ubuntu because like Debian, they support multiarch, that means, having a 64 bit linux kernel (the OS core) and both 64 bit (ARM64/AARCH64) userspace libraries that are used by 64 bit programs like box64, and 32 bit (ARMHF) userspace libraries, used by ARMHF 32 bit software, like BOX86. So, a 64 bit core, and both 64 bit and 32 bit arm libraries. Windows used to do this not that far away in time to run x86 windows software. Programas doesn't run isolated, they use system (or third party) libraries to work, that's why we need them. Libraries make development and system complexity to be reduced. On windows libraries end on .dll and here on .so, so, shared objects. why shared? because they are or can be used by multiple software. 
 
 1. We are going to setup a multiarch system adding armhf (AKA ARM 32 bits) before installing BOX86 (an armhf software only). This is not a complete list for the linux x86 stuff, it's
