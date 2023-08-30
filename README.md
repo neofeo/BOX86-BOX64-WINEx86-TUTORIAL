@@ -7,7 +7,8 @@ _Salvador Liébana (MicroLinux YT: https://www.youtube.com/channel/UCwFQAEj1lp3o
 **Note:** BOX86/64/WINE SCRIPT
 
 ```
-wget https://github.com/neofeo/BOX86-BOX64-WINEx86-TUTORIAL/blob/main/boxer/boxer2.sh
+wget https://github.com/neofeo/BOX86-BOX64-WINEx86-TUTORIAL/raw/main/boxer/boxer2.sh && chmod +x boxer2.sh && ./boxer2.sh
+
 ```
 
 
