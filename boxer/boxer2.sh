@@ -370,7 +370,7 @@ if [ "$PLATFORM" != "rockchip-rk3588" ]; then
     case $? in
         0)
             echo "Upgrading Mesa drivers for Panfrost..."
-            if [ "$DISTRO" == "Ubuntu" ] || [ "$DISTRO" == "Debian" ]; then
+            if [ "$DISTRO" == "Ubuntu" ]; then
                 sudo add-apt-repository --yes ppa:oibaf/graphics-drivers
                 sudo apt -qq update
                 sudo apt -qq install mesa-va-drivers:armhf mesa-va-drivers libd3dadapter9-mesa:armhf -y
