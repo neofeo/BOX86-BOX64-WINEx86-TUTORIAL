@@ -374,7 +374,7 @@ if [ "$PLATFORM" != "rockchip-rk3588" ]; then
                 sudo add-apt-repository --yes ppa:oibaf/graphics-drivers
                 sudo apt -qq update
                 sudo apt -qq install mesa-va-drivers:armhf mesa-va-drivers libd3dadapter9-mesa:armhf -y
-                echo -e "After this, you can try galliumnine (Native Dx9) after installing 'nine' with 'winetricks galliumnine' and launching 'wine ninewinecfg' to check if it works."
+                zenity --info --text="After this, you can try galliumnine (Native Dx9) after installing 'nine' with 'winetricks galliumnine' and launching 'wine ninewinecfg' to check if it works."
             else
                 echo -e "Unsupported distribution for Mesa driver upgrade."
             fi
