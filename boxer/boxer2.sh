@@ -1,5 +1,23 @@
 #!/bin/bash
 
+# Check and install required packages
+packages=("zenity" "glxinfo" "neofetch")
+packages_to_install=()
+
+for package in "${packages[@]}"; do
+    if ! command -v "$package" &> /dev/null; then
+        packages_to_install+=("$package")
+    fi
+done
+
+if [ ${#packages_to_install[@]} -gt 0 ]; then
+    echo "The following packages need to be installed: ${packages_to_install[@]}"
+    echo "Installing..."
+    sudo apt-get update
+    sudo apt-get install -y "${packages_to_install[@]}"
+fi
+
+
 # Set the width and height of the Zenity window
 width=600
 height=400
@@ -36,25 +54,21 @@ ARCH=$(uname -m)
 KERNEL=$(uname -r)
 export BOX86_NOBANNER=1
 
-
 # Check Internet Connection
 if ! ping -c 1 google.com &> /dev/null; then
-    error_message="No internet connection. Exiting..."
-    zenity --error --text="$error_message"
+    zenity --error --text="No internet connection. Exiting..."
     exit 1
 fi
 
 # Check if the distro is Debian or Ubuntu
 if [ "$DISTRO" != "Debian" ] && [ "$DISTRO" != "Ubuntu" ]; then
-    error_message="This script only supports Debian and Ubuntu."
-    zenity --error --text="$error_message"
+    zenity --error --text="This script only supports Debian and Ubuntu."
     exit 1
 fi
 
 # Check if the architecture is ARM64
 if [ "$ARCH" != "aarch64" ]; then
-    error_message="This script is intended for ARM64 platforms."
-    zenity --error --text="$error_message"
+    zenity --error --text="This script is intended for ARM64 platforms."
     exit 1
 fi
 
@@ -66,21 +80,15 @@ else
     PLATFORM="mainline"
 fi
 
-# installing essentials for checks and UI
 
-sudo apt install -qq -y mesa-utils neofetch
-
-
-
-# checking if Panfrost
-
+# Checking if Panfrost
 if glxinfo -B | awk '/Device:/ { if (tolower($0) ~ /panfrost/) exit 0; else exit 1; }'; then
     echo "Panfrost driver detected."
 else
-    error_message="Panfrost driver not detected. Exiting..."
-    zenity --error --text="$error_message"
+    zenity --error --text="Panfrost driver not detected. Exiting..."
     exit 1
 fi
+
 
 
 # Check if armhf architecture is already added
@@ -118,7 +126,7 @@ PACKAGES=(
     libxpresent1:armhf
 )
 
-# Install requi packages and handle conflicts
+# Install required packages and handle conflicts
 while [ ${#PACKAGES[@]} -gt 0 ]; do
     sudo apt install -qq -y "${PACKAGES[@]}"
     if [ $? -ne 0 ]; then
@@ -127,7 +135,7 @@ while [ ${#PACKAGES[@]} -gt 0 ]; do
             echo -e "$Conflicting package detected: $conflicting_package. Removing from the list and retrying installation...$"
             PACKAGES=("${PACKAGES[@]/$conflicting_package}")
         else
-            echo -e "$Installation failed due to other reasons. Exiting...$"
+            zenity --error --text="Installation failed due to other reasons. Exiting..."
             exit 1
         fi
     else
@@ -157,14 +165,14 @@ sleep 1
 # Check if "box86" command produces output
 output_box86=$(box86 2>&1)
 if [ -z "$output_box86" ]; then
-    echo "Error: Box86 command not found or produced no output."
+    zenity --error --text="Error: Box86 command not found or produced no output. Something happened, stopping here"
     exit 1
 fi
 
 # Check if "box64" command produces output
 output_box64=$(box64 2>&1)
 if [ -z "$output_box64" ]; then
-    echo "Error: Box64 command not found or produced no output."
+    zenity --error --text="Error: Box64 command not found or produced no output. Something happened, stopping here"
     exit 1
 fi
 
@@ -179,8 +187,6 @@ if [[ -z $(grep "PAN_MESA_DEBUG=gl3" /etc/environment) ]]; then
 else
     echo "PAN_MESA_DEBUG environment variable already set. Skipping."
 fi
-
-
 
 
 # Check if there's output from running Wine and if ~/wine directory exists
@@ -205,10 +211,7 @@ if [[ -n "$wine_output" && -d "$wine_directory" ]]; then
     esac
 fi
 
-
-
 # Display Wine version selection dialog using zenity
-
 
 wine_version=$(zenity --question \
     --title="Wine Version Selection" \
@@ -272,8 +275,6 @@ case $wine_version in
         ;;
 esac
 
-
-
 # Verify Wine installation
 if wine --version &>/dev/null; then
     echo "Wine installation seems successful. Continuing with the setup."
@@ -336,13 +337,19 @@ else
 fi
 
 
-# Download and install Wine Mono 8.0
-echo -e "$Downloading and installing Wine Mono 8.0...$"
+# Download and install Wine Mono
+echo "Downloading and installing Wine Mono..."
 mkdir -p ~/.cache/wine/
-wget https://dl.winehq.org/wine/wine-mono/7.4.0/wine-mono-7.4.0-x86.msi -P ~/.cache/wine/
 
-# wineboot
-~/wine/bin/wineboot
+file_path=~/.cache/wine/wine-mono-7.4.0-x86.msi
+if [ ! -f "$file_path" ]; then
+    wget https://dl.winehq.org/wine/wine-mono/7.4.0/wine-mono-7.4.0-x86.msi -P ~/.cache/wine/
+    ~/wine/bin/wineboot > /dev/null 2>&1
+else
+    echo "Wine Mono file already exists. Skipping download but launching wineboot anyway."
+    ~/wine/bin/wineboot > /dev/null 2>&1
+fi
+
 
 # Ask user if they want to install additional components with winetricks
 zenity --question \
