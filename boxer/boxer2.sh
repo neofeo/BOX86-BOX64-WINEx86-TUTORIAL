@@ -72,9 +72,11 @@ if [ "$ARCH" != "aarch64" ]; then
     exit 1
 fi
 
-# Check if the kernel version contains "5.10" and "rockchip"
-KERNEL_VERSION=$(uname -r)
-if [[ "$KERNEL_VERSION" == *"5.10"* && "$KERNEL_VERSION" == *"rockchip"* ]]; then
+# Check if the platform is "rk3588" or other RK linux device.
+zenity --question --text="IMPORTANT: Are you using Rockchip Linux 5.10 on a Rockchip device(RK3588/RK3566/ETC)? if NO, then you are on MAINLINE LINUX"
+
+# Check the user's response
+if [ $? == 0 ]; then
     PLATFORM="rockchip-rk3588"
 else
     PLATFORM="mainline"
@@ -101,9 +103,9 @@ fi
 
 # List of requi packages
 PACKAGES=(
-    cmake
     cabextract
     p7zip-full
+    libglu1-mesa:armhf
     libncurses6:armhf
     libc6:armhf
     libx11-6:armhf
