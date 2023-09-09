@@ -159,7 +159,7 @@ fi
 if [ "$PLATFORM" == "rockchip-rk3588" ]; then
     sudo apt install box86-rk3588 box64-rk3588 -y
 else
-    sudo apt install box86-generic-arm box64-generic-arm -y
+    sudo apt install box86-generic-arm box64-arm64 -y
 fi
 
 sleep 1
