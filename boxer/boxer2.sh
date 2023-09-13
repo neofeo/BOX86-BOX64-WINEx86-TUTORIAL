@@ -130,7 +130,7 @@ PACKAGES=(
 
 # Install required packages and handle conflicts
 while [ ${#PACKAGES[@]} -gt 0 ]; do
-    sudo apt install -qq -y "${PACKAGES[@]}"
+    sudo apt install -y "${PACKAGES[@]}"
     if [ $? -ne 0 ]; then
         conflicting_package=$(sudo apt-get -s -o Debug::NoLocking=true install "${PACKAGES[@]}" 2>&1 | awk '/Conflicting packages/{print $NF}')
         if [ -n "$conflicting_package" ]; then
