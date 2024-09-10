@@ -1,5 +1,8 @@
 # BOX86/BOX64/WINEX86/STEAM TUTORIAL for ARM64 LINUX SYSTEMS
-
+DEPRECATED!!!!!!!!
+DEPRECATED!!!!!!!!!
+DEPRECATED!!!!!!!
+DEPRECARED!!!!!!
 
 _Salvador Liébana (MicroLinux YT: https://www.youtube.com/channel/UCwFQAEj1lp3out4n7BeBatQ )_
 
